@@ -33,9 +33,11 @@ import com.stericson.RootTools.RootTools;
  * {@link MonitorFragment#newInstance} factory method to create an instance of
  * this fragment.
  */
+
 public class MonitorFragment extends ListFragment implements
 		OnItemClickListener {
 
+	private List<Model_Process> process_list;
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	private String section_number;
 	private Thread monitorThread, hashTableThread;
@@ -98,7 +100,7 @@ public class MonitorFragment extends ListFragment implements
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
 				android.R.layout.simple_list_item_1, values);
 		// name();
-		getpid();
+		getUserPID();
 		//
 		// ArrayAdapter(
 		// getActivity(), values,
@@ -106,30 +108,6 @@ public class MonitorFragment extends ListFragment implements
 
 		setListAdapter(adapter);
 		getListView().setOnItemClickListener(this);
-
-	}
-
-	private void getpid() {
-		try {
-			String regex = "\\d+";
-			Pattern p = Pattern.compile(regex);
-			File proc_dir = new File("/proc");
-			String[] content_list = proc_dir.list();
-			for (String name : content_list) {
-				if (new File("/proc/" + name).isDirectory()) {
-					Matcher m = p.matcher(name);
-					if (m.matches()) {
-						Log.i("NEOM in getPID", name);
-						if(RootTools.isAccessGiven())
-						Log.i("NEOM in getPID", new File("/proc/" + name
-								+ "/exe").getCanonicalPath());
-						// getProcessName(name)
-					}
-				}
-			}
-		} catch (Exception ex) {
-			Log.i("NEOM in getPID", ex.toString());
-		}
 
 	}
 
@@ -144,17 +122,43 @@ public class MonitorFragment extends ListFragment implements
 	 * Methods-------------------------------------------------------------
 	 */
 
-	private void name() {
+	private void getAllPID() {
+		try {
+			String regex = "\\d+";
+			Pattern p = Pattern.compile(regex);
+			File proc_dir = new File("/proc");
+			String[] content_list = proc_dir.list();
+			for (String name : content_list) {
+				if (new File("/proc/" + name).isDirectory()) {
+					Matcher m = p.matcher(name);
+					if (m.matches()) {
+						Log.i("NEOM in getPID", name);
+						if (RootTools.isAccessGiven())
+							Log.i("NEOM in getPID", new File("/proc/" + name
+									+ "/exe").getCanonicalPath());
+						// getProcessName(name)
+					}
+				}
+			}
+		} catch (Exception ex) {
+			Log.i("NEOM in getPID", ex.toString());
+		}
+
+	}
+
+	private void getUserPID() {
 		ActivityManager activityManager = (ActivityManager) getActivity()
 				.getSystemService(Context.ACTIVITY_SERVICE);
 		List<ActivityManager.RunningAppProcessInfo> pidsTask = activityManager
 				.getRunningAppProcesses();
-
-		// for (int i = 0; i < pidsTask.size(); i++) {
-		// nameList.add(pidsTask.get(i).processName);
-		// idList.add(pidsTask.get(i).uid);
-		// }
-
+		for (int i = 0; i < pidsTask.size(); i++) {
+			Model_Process processObj = new Model_Process();
+			processObj.processID = pidsTask.get(i).pid;
+			processObj.processName = pidsTask.get(i).processName;
+			processObj.userID = pidsTask.get(i).uid;
+			processObj.packageList = pidsTask.get(i).pkgList;
+			process_list.add(processObj);
+		}
 	}
 
 	// -------------------------------------------------------------------------------
