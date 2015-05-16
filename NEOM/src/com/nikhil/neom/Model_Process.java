@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Model_Process {
 	public String processName;
-	public int processID;
-	public int userID;
-	public String[] packageList;
+	public String processID;
+	public String userID;
+	public String packageList;
 }
