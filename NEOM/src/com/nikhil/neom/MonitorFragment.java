@@ -14,6 +14,7 @@ import android.app.ActivityManager;
 import android.app.ListFragment;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Debug.MemoryInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.app.Fragment;
@@ -48,6 +49,8 @@ public class MonitorFragment extends ListFragment implements
 	private Handler handler;
 	private int counter = 0; // For test TBR
 
+	private MyListAdapter myListAdapter;
+
 	/*
 	 * static { System.loadLibrary("ndksetup"); // ndksetup is the LOCAL_MODULE
 	 * string. }
@@ -66,25 +69,9 @@ public class MonitorFragment extends ListFragment implements
 		// pidinodepname();
 
 		// pid_inode_pname();
-		/*
-		 * // region monitoring : NG handler = new Handler() {
-		 * 
-		 * @Override public void handleMessage(Message msg) {
-		 * super.handleMessage(msg); Bundle mbb = msg.getData();
-		 * txtview.setText("Monitor Fragment : " +
-		 * Integer.toString(mbb.getInt("Num"))); } }; monitorThread = new
-		 * Thread(new Runnable() {
-		 * 
-		 * @Override public void run() {
-		 * 
-		 * while (counter < 10) { counter++; Bundle mb = new Bundle();
-		 * mb.putInt("Num", counter); Message mmsg = Message.obtain();
-		 * mmsg.setData(mb); handler.sendMessage(mmsg); try {
-		 * Thread.sleep(3000); // Do some stuff } catch (Exception e) {
-		 * e.getLocalizedMessage(); }
-		 * 
-		 * } } }); monitorThread.start(); // endregion monitoring : NG
-		 */
+
+		// region monitoring : NG
+
 		return rootView;
 
 	}
@@ -100,12 +87,54 @@ public class MonitorFragment extends ListFragment implements
 		 * ArrayAdapter<String>(getActivity(),
 		 * android.R.layout.simple_list_item_1, values);
 		 */
-		getUserPID();
-		MyListAdapter myListAdapter = new MyListAdapter(getActivity(),
+		// getJavaProcessPID();
+
+		// endregion monitoring : NG
+
+		myListAdapter = new MyListAdapter(getActivity(),
 				R.layout.process_list_item, process_list);
 
 		setListAdapter(myListAdapter);
 		getListView().setOnItemClickListener(this);
+
+		handler = new Handler() {
+
+			@Override
+			public void handleMessage(Message msg) {
+				super.handleMessage(msg);
+				Bundle mbb = msg.getData();
+				// txtview.setText("Monitor Fragment : " +
+				// Integer.toString(mbb.getInt("Num")));
+				if (mbb.getBoolean("DataChanged")) {
+					myListAdapter.clear();
+					getJavaProcessPID();
+					myListAdapter.notifyDataSetChanged();
+				}
+			}
+		};
+
+		monitorThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while (true) {
+
+						Thread.sleep(500);
+
+						Bundle mb = new Bundle();
+						mb.putBoolean("DataChanged", true);
+						Message mmsg = Message.obtain();
+						mmsg.setData(mb);
+						handler.sendMessage(mmsg);
+
+					}
+				} catch (Exception e) {
+					e.getLocalizedMessage();
+				}
+
+			}// end of run
+		});
+		monitorThread.start();
 
 	}
 
@@ -184,7 +213,7 @@ public class MonitorFragment extends ListFragment implements
 
 	}
 
-	private void getUserPID() {
+	private void getJavaProcessPID() {
 		ActivityManager activityManager = (ActivityManager) getActivity()
 				.getSystemService(Context.ACTIVITY_SERVICE);
 		List<ActivityManager.RunningAppProcessInfo> pidsTask = activityManager
@@ -193,6 +222,7 @@ public class MonitorFragment extends ListFragment implements
 			Model_Process processObj = new Model_Process();
 			processObj.processID = "PID: "
 					+ Integer.toString(pidsTask.get(i).pid);
+			getProcessMemInfo(pidsTask.get(i).pid);
 			processObj.processName = "Process: " + pidsTask.get(i).processName;
 			processObj.userID = "UID: " + Integer.toString(pidsTask.get(i).uid);
 			processObj.packageList = "Package: ";
@@ -200,6 +230,17 @@ public class MonitorFragment extends ListFragment implements
 				processObj.packageList = processObj.packageList + pkg + " ";
 			process_list.add(processObj);
 		}
+	}
+
+	private void getProcessMemInfo(int PID) {
+		ActivityManager activityManagerMEM = (ActivityManager) getActivity()
+				.getSystemService(Context.ACTIVITY_SERVICE);
+		int ar[];
+
+		MemoryInfo mi[];// = new MemoryInfo();
+
+		mi = activityManagerMEM.getProcessMemoryInfo(new int[] { PID });
+
 	}
 
 	// -------------------------------------------------------------------------------
