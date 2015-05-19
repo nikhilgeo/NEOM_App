@@ -3,6 +3,7 @@ package com.nikhil.neom;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -220,9 +221,12 @@ public class MonitorFragment extends ListFragment implements
 				.getSystemService(Context.ACTIVITY_SERVICE);
 		List<ActivityManager.RunningAppProcessInfo> pidsTask = activityManager
 				.getRunningAppProcesses();
+		ArrayList<Integer> pid_arlist = new ArrayList<Integer>();
 		for (int i = 0; i < pidsTask.size(); i++) {
 			Model_Process processObj = new Model_Process();
 			processObj.processID = pidsTask.get(i).pid;
+			pid_arlist.add(processObj.processID);
+
 			// getProcessMemInfo(pidsTask.get(i).pid);
 			processObj.processName = pidsTask.get(i).processName;
 			processObj.userID = pidsTask.get(i).uid;
@@ -234,8 +238,8 @@ public class MonitorFragment extends ListFragment implements
 				if (isDuplicate(processObj.processID))
 					continue;
 			process_list.add(processObj);
-
-		}
+		}// End of For loop
+		removeExpiredPID(pid_arlist);
 	}
 
 	/*
@@ -247,6 +251,23 @@ public class MonitorFragment extends ListFragment implements
 				return true;
 		}
 		return false;
+	}
+
+	/*
+	 * Remove the stopped process from the process list
+	 */
+	private void removeExpiredPID(ArrayList<Integer> pids) {
+		// for (Model_Process pro : process_list) {
+		// if (!pids.contains(pro.processID))
+		// process_list.remove(pro);
+		// }
+		for (Iterator<Model_Process> iterator = process_list.iterator(); iterator
+				.hasNext();) {
+			Model_Process pro = iterator.next();
+			if (!pids.contains(pro.processID))
+				iterator.remove();
+		}
+
 	}
 
 	private void getProcessMemInfo(int PID) {
