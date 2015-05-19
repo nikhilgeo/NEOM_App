@@ -102,14 +102,14 @@ public class MonitorFragment extends ListFragment implements
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
-				Bundle mbb = msg.getData();
+				// Bundle mbb = msg.getData();
 				// txtview.setText("Monitor Fragment : " +
 				// Integer.toString(mbb.getInt("Num")));
-				if (mbb.getBoolean("DataChanged")) {
-					myListAdapter.clear();
-					getJavaProcessPID();
-					myListAdapter.notifyDataSetChanged();
-				}
+				// if (mbb.getBoolean("DataChanged")) {
+				//myListAdapter.clear();
+				getJavaProcessPID();
+				myListAdapter.notifyDataSetChanged();
+				// }
 			}
 		};
 
@@ -121,11 +121,13 @@ public class MonitorFragment extends ListFragment implements
 
 						Thread.sleep(500);
 
-						Bundle mb = new Bundle();
-						mb.putBoolean("DataChanged", true);
-						Message mmsg = Message.obtain();
-						mmsg.setData(mb);
-						handler.sendMessage(mmsg);
+						// Bundle mb = new Bundle();
+						// mb.putBoolean("DataChanged", true);
+						// Message mmsg = Message.obtain();
+						// mmsg.setData(mb);
+						//
+						// handler.sendMessage(mmsg);
+						handler.sendEmptyMessage(0);
 
 					}
 				} catch (Exception e) {
@@ -185,9 +187,9 @@ public class MonitorFragment extends ListFragment implements
 	 * return "processName"; }
 	 */
 
-	/*
-	 * Custom Methods
-	 */
+	// -------------------------------------------------------------------------------
+	// ------------------------Custom_Methods--------------------------------------
+	// -------------------------------------------------------------------------------
 
 	private void getAllPID() {
 		try {
@@ -220,18 +222,21 @@ public class MonitorFragment extends ListFragment implements
 				.getRunningAppProcesses();
 		for (int i = 0; i < pidsTask.size(); i++) {
 			Model_Process processObj = new Model_Process();
-			processObj.processID = "PID: "
-					+ Integer.toString(pidsTask.get(i).pid);
-			getProcessMemInfo(pidsTask.get(i).pid);
-			processObj.processName = "Process: " + pidsTask.get(i).processName;
-			processObj.userID = "UID: " + Integer.toString(pidsTask.get(i).uid);
-			processObj.packageList = "Package: ";
+			processObj.processID =  Integer.toString(pidsTask.get(i).pid);
+			//getProcessMemInfo(pidsTask.get(i).pid);
+			processObj.processName = pidsTask.get(i).processName;
+			processObj.userID = Integer.toString(pidsTask.get(i).uid);
 			for (String pkg : pidsTask.get(i).pkgList)
 				processObj.packageList = processObj.packageList + pkg + " ";
+			//if(!process_list.isEmpty())
+				
 			process_list.add(processObj);
+			
 		}
 	}
 
+	//private Boolean isDuplicate()
+	
 	private void getProcessMemInfo(int PID) {
 		ActivityManager activityManagerMEM = (ActivityManager) getActivity()
 				.getSystemService(Context.ACTIVITY_SERVICE);
