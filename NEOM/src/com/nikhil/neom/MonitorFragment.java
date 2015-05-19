@@ -106,7 +106,7 @@ public class MonitorFragment extends ListFragment implements
 				// txtview.setText("Monitor Fragment : " +
 				// Integer.toString(mbb.getInt("Num")));
 				// if (mbb.getBoolean("DataChanged")) {
-				//myListAdapter.clear();
+				// myListAdapter.clear();
 				getJavaProcessPID();
 				myListAdapter.notifyDataSetChanged();
 				// }
@@ -172,11 +172,11 @@ public class MonitorFragment extends ListFragment implements
 			TextView packgname = (TextView) row.findViewById(R.id.txtpackgname);
 			packgname.setText(processItem.packageList);
 			TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
-			txtpid.setText(processItem.processID);
+			txtpid.setText(Integer.toString(processItem.processID));
 			TextView pname = (TextView) row.findViewById(R.id.txtpname);
 			pname.setText(processItem.processName);
 			TextView uid = (TextView) row.findViewById(R.id.txtuid);
-			uid.setText(processItem.userID);
+			uid.setText(Integer.toString(processItem.userID));
 			return row;
 		}
 	}
@@ -222,21 +222,33 @@ public class MonitorFragment extends ListFragment implements
 				.getRunningAppProcesses();
 		for (int i = 0; i < pidsTask.size(); i++) {
 			Model_Process processObj = new Model_Process();
-			processObj.processID =  Integer.toString(pidsTask.get(i).pid);
-			//getProcessMemInfo(pidsTask.get(i).pid);
+			processObj.processID = pidsTask.get(i).pid;
+			// getProcessMemInfo(pidsTask.get(i).pid);
 			processObj.processName = pidsTask.get(i).processName;
-			processObj.userID = Integer.toString(pidsTask.get(i).uid);
+			processObj.userID = pidsTask.get(i).uid;
 			for (String pkg : pidsTask.get(i).pkgList)
-				processObj.packageList = processObj.packageList + pkg + " ";
-			//if(!process_list.isEmpty())
-				
+				processObj.packageList = processObj.packageList + pkg + "\n";
+			processObj.packageList = processObj.packageList.substring(0,
+					processObj.packageList.length() - 1);
+			if (!process_list.isEmpty())
+				if (isDuplicate(processObj.processID))
+					continue;
 			process_list.add(processObj);
-			
+
 		}
 	}
 
-	//private Boolean isDuplicate()
-	
+	/*
+	 * Check if PID already exist in the List before adding
+	 */
+	private Boolean isDuplicate(int PID) {
+		for (Model_Process pro : process_list) {
+			if (pro.processID == PID)
+				return true;
+		}
+		return false;
+	}
+
 	private void getProcessMemInfo(int PID) {
 		ActivityManager activityManagerMEM = (ActivityManager) getActivity()
 				.getSystemService(Context.ACTIVITY_SERVICE);
