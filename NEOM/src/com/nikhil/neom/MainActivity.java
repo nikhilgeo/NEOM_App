@@ -49,7 +49,6 @@ public class MainActivity extends Activity implements
 
 		switch (position) {
 		case 1:
-
 			fragmentManager
 					.beginTransaction()
 					.replace(R.id.container,

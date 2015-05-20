@@ -118,27 +118,36 @@ public class MonitorFragment extends ListFragment implements
 			@Override
 			public void run() {
 				try {
-					while (true) {
+					while (!Thread.currentThread().isInterrupted()) {
+						while (true) {
 
-						Thread.sleep(500);
+							Thread.sleep(1000);
 
-						// Bundle mb = new Bundle();
-						// mb.putBoolean("DataChanged", true);
-						// Message mmsg = Message.obtain();
-						// mmsg.setData(mb);
-						//
-						// handler.sendMessage(mmsg);
-						handler.sendEmptyMessage(0);
+							// Bundle mb = new Bundle();
+							// mb.putBoolean("DataChanged", true);
+							// Message mmsg = Message.obtain();
+							// mmsg.setData(mb);
+							//
+							// handler.sendMessage(mmsg);
+							handler.sendEmptyMessage(0);
 
+						}
 					}
 				} catch (Exception e) {
 					e.getLocalizedMessage();
 				}
 
 			}// end of run
+
 		});
 		monitorThread.start();
 
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		monitorThread.interrupt();
 	}
 
 	/*
