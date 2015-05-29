@@ -1,6 +1,9 @@
 package com.nikhil.neom;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,6 +34,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.stericson.RootTools.RootTools;
+import com.stericson.RootTools.execution.Command;
+import com.stericson.RootTools.execution.CommandCapture;
 
 /**
  * A simple {@link Fragment} subclass. Activities that contain this fragment
@@ -46,7 +51,7 @@ public class MonitorFragment extends ListFragment implements
 	private List<Model_Process> process_list = new ArrayList<Model_Process>();
 	private static final String ARG_SECTION_NUMBER = "section_number";
 	private String section_number;
-	private Thread monitorThread, hashTableThread;
+	private Thread monitorThread, execmdThread;
 	private Handler handler;
 	private int counter = 0; // For test TBR
 
@@ -108,7 +113,8 @@ public class MonitorFragment extends ListFragment implements
 				// Integer.toString(mbb.getInt("Num")));
 				// if (mbb.getBoolean("DataChanged")) {
 				// myListAdapter.clear();
-				getJavaProcessPID();
+				// getJavaProcessPID();
+				getAllPID();
 				myListAdapter.notifyDataSetChanged();
 				// }
 			}
@@ -121,6 +127,7 @@ public class MonitorFragment extends ListFragment implements
 					while (!Thread.currentThread().isInterrupted()) {
 						while (true) {
 
+							getAllPID();
 							Thread.sleep(1000);
 
 							// Bundle mb = new Bundle();
@@ -199,22 +206,37 @@ public class MonitorFragment extends ListFragment implements
 
 	// -------------------------------------------------------------------------------
 	// ------------------------Custom_Methods--------------------------------------
-	// -------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------------
+
+	private void readTCPConnections() {
+		try {
+			
+
+		} catch (Exception ex) {
+
+		}
+	}
 
 	private void getAllPID() {
 		try {
+			ExecuteCMD execmd = new ExecuteCMD();
 			String regex = "\\d+";
 			Pattern p = Pattern.compile(regex);
 			File proc_dir = new File("/proc");
 			String[] content_list = proc_dir.list();
+			String cmdOut;
 			for (String name : content_list) {
 				if (new File("/proc/" + name).isDirectory()) {
 					Matcher m = p.matcher(name);
 					if (m.matches()) {
-						Log.i("NEOM in getPID", name);
-						if (RootTools.isAccessGiven())
-							Log.i("NEOM in getPID", new File("/proc/" + name
-									+ "/exe").getCanonicalPath());
+						String[] cmd = { "ls -l " + "/proc/" + name + "/exe" };
+						cmdOut = execmd.RunAsRoot(cmd);
+						if (cmdOut == null) {
+							cmdOut = "Kernel Process";
+							Log.i("NEOM in getPID", "NULL");
+						} else
+							Log.i("NEOM in getPID", cmdOut);
+
 						// getProcessName(name)
 					}
 				}
@@ -226,6 +248,9 @@ public class MonitorFragment extends ListFragment implements
 	}
 
 	private void getJavaProcessPID() {
+		// exeRoot();
+		// String output = executeCommand("su -c ls /data");
+
 		ActivityManager activityManager = (ActivityManager) getActivity()
 				.getSystemService(Context.ACTIVITY_SERVICE);
 		List<ActivityManager.RunningAppProcessInfo> pidsTask = activityManager
@@ -289,6 +314,70 @@ public class MonitorFragment extends ListFragment implements
 		mi = activityManagerMEM.getProcessMemoryInfo(new int[] { PID });
 
 	}
+
+	// private String executeCommand(String command) {
+	//
+	// StringBuffer output = new StringBuffer();
+	//
+	// Process p;
+	// try {
+	// p = Runtime.getRuntime().exec(command);
+	// p.waitFor();
+	// BufferedReader reader = new BufferedReader(new InputStreamReader(
+	// p.getInputStream()));
+	//
+	// String line = "";
+	// while ((line = reader.readLine()) != null) {
+	// output.append(line + "\n");
+	// }
+	//
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	//
+	// return output.toString();
+	//
+	// }
+
+	// private void exeRoot()
+	// {
+	// try
+	// {
+	// Command command = new Command(0, "echo this is a command",
+	// "echo this is another command")
+	// {
+	// @Override
+	// public void output(int id, String line)
+	// {
+	// //(Do something with the output here)
+	// }
+	//
+	// @Override
+	// public void commandCompleted(int arg0, int arg1) {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	//
+	// @Override
+	// public void commandOutput(int arg0, String arg1) {
+	// // TODO Auto-generated method stub
+	// int len
+	//
+	// }
+	//
+	// @Override
+	// public void commandTerminated(int arg0, String arg1) {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	// };
+	// RootTools.getShell(true).add(command);
+	// }
+	// catch(Exception ex)
+	// {
+	//
+	// }
+	// }
 
 	// -------------------------------------------------------------------------------
 	// ------------------------Factory_Methods--------------------------------------
