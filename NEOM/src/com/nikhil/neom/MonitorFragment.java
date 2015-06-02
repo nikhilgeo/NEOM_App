@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -23,6 +24,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,6 +35,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.nikhil.neom.Utilities.Connection;
 import com.stericson.RootTools.RootTools;
 import com.stericson.RootTools.execution.Command;
 import com.stericson.RootTools.execution.CommandCapture;
@@ -105,16 +109,20 @@ public class MonitorFragment extends ListFragment implements
 
 		handler = new Handler() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void handleMessage(Message msg) {
 				super.handleMessage(msg);
-				// Bundle mbb = msg.getData();
+				Bundle mbb = msg.getData();
+				if (mbb != null) {
+					process_list = (List<Model_Process>) mbb
+							.getSerializable("processKey");
+				}
 				// txtview.setText("Monitor Fragment : " +
 				// Integer.toString(mbb.getInt("Num")));
 				// if (mbb.getBoolean("DataChanged")) {
 				// myListAdapter.clear();
-				// getJavaProcessPID();
-				getAllPID();
+				// getAllPID();
 				myListAdapter.notifyDataSetChanged();
 				// }
 			}
@@ -127,16 +135,18 @@ public class MonitorFragment extends ListFragment implements
 					while (!Thread.currentThread().isInterrupted()) {
 						while (true) {
 
-							getAllPID();
-							Thread.sleep(1000);
+							// getAllPID();
 
-							// Bundle mb = new Bundle();
-							// mb.putBoolean("DataChanged", true);
-							// Message mmsg = Message.obtain();
-							// mmsg.setData(mb);
-							//
-							// handler.sendMessage(mmsg);
-							handler.sendEmptyMessage(0);
+							List<Model_Process> processData = getJavaProcessPID();
+
+							Bundle mb = new Bundle();
+							mb.putSerializable("processKey",
+									(Serializable) processData);
+							Message mmsg = Message.obtain();
+							mmsg.setData(mb);
+							handler.sendMessage(mmsg);
+
+							Thread.sleep(2000);
 
 						}
 					}
@@ -185,15 +195,28 @@ public class MonitorFragment extends ListFragment implements
 				row.setBackgroundColor(Color.WHITE);
 			}
 
-			Model_Process processItem = process_list.get(position);
-			TextView packgname = (TextView) row.findViewById(R.id.txtpackgname);
-			packgname.setText(processItem.packageList);
-			TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
-			txtpid.setText(Integer.toString(processItem.processID));
-			TextView pname = (TextView) row.findViewById(R.id.txtpname);
-			pname.setText(processItem.processName);
-			TextView uid = (TextView) row.findViewById(R.id.txtuid);
-			uid.setText(Integer.toString(processItem.userID));
+			if (process_list != null) {
+				Model_Process processItem = process_list.get(position);
+				TextView txtappname = (TextView) row
+						.findViewById(R.id.txtappname);
+				txtappname.setText(processItem.AppName);
+				TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
+				txtpid.setText(Integer.toString(processItem.processID));
+				TextView pname = (TextView) row.findViewById(R.id.txtpname);
+				pname.setText(processItem.processName);
+				TextView uid = (TextView) row.findViewById(R.id.txtuid);
+				uid.setText(Integer.toString(processItem.userID));
+				TextView txtpss = (TextView) row.findViewById(R.id.txtpss);
+				txtpss.setText(Float.toString(processItem.memInfo[0]) + "MB");
+				TextView txtpvtdirty = (TextView) row
+						.findViewById(R.id.txtpvtdirty);
+				txtpvtdirty.setText(Float.toString(processItem.memInfo[1])
+						+ "MB");
+				TextView txtshrdirty = (TextView) row
+						.findViewById(R.id.txtshrdirty);
+				txtshrdirty.setText(Float.toString(processItem.memInfo[2])
+						+ "MB");
+			}
 			return row;
 		}
 	}
@@ -210,7 +233,6 @@ public class MonitorFragment extends ListFragment implements
 
 	private void readTCPConnections() {
 		try {
-			
 
 		} catch (Exception ex) {
 
@@ -247,33 +269,54 @@ public class MonitorFragment extends ListFragment implements
 
 	}
 
-	private void getJavaProcessPID() {
-		// exeRoot();
-		// String output = executeCommand("su -c ls /data");
+	private List<Model_Process> getJavaProcessPID() {
 
-		ActivityManager activityManager = (ActivityManager) getActivity()
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		List<ActivityManager.RunningAppProcessInfo> pidsTask = activityManager
-				.getRunningAppProcesses();
-		ArrayList<Integer> pid_arlist = new ArrayList<Integer>();
-		for (int i = 0; i < pidsTask.size(); i++) {
-			Model_Process processObj = new Model_Process();
-			processObj.processID = pidsTask.get(i).pid;
-			pid_arlist.add(processObj.processID);
+		try {
+			Utilities utilities = new Utilities();
+			final PackageManager pm = getActivity().getPackageManager();
+			ActivityManager activityManager = (ActivityManager) getActivity()
+					.getSystemService(Context.ACTIVITY_SERVICE);
+			List<ActivityManager.RunningAppProcessInfo> pidsTask = activityManager
+					.getRunningAppProcesses();
+			ArrayList<Integer> pid_arlist = new ArrayList<Integer>();
+			for (int i = 0; i < pidsTask.size(); i++) {
+				Model_Process processObj = new Model_Process();
+				processObj.processID = pidsTask.get(i).pid;
+				pid_arlist.add(processObj.processID);
 
-			// getProcessMemInfo(pidsTask.get(i).pid);
-			processObj.processName = pidsTask.get(i).processName;
-			processObj.userID = pidsTask.get(i).uid;
-			for (String pkg : pidsTask.get(i).pkgList)
-				processObj.packageList = processObj.packageList + pkg + "\n";
-			processObj.packageList = processObj.packageList.substring(0,
-					processObj.packageList.length() - 1);
-			if (!process_list.isEmpty())
-				if (isDuplicate(processObj.processID))
-					continue;
-			process_list.add(processObj);
-		}// End of For loop
-		removeExpiredPID(pid_arlist);
+				// ArrayList<Connection> con = utilities
+				// .getConnections(processObj.processID.toString());
+
+				processObj.memInfo = getProcessMemInfo(pidsTask.get(i).pid);
+				processObj.processName = pidsTask.get(i).processName.split(":")[0];
+				processObj.userID = pidsTask.get(i).uid;
+
+				CharSequence app_name;
+				try {
+					app_name = pm.getApplicationLabel(pm.getApplicationInfo(
+							pidsTask.get(i).processName,
+							PackageManager.GET_META_DATA));
+					// app_name = pm.getNameForUid(pidsTask.get(i).uid);
+
+				} catch (Exception ex) {
+					Log.w("NEOM:Error", ex.toString(), ex);
+					String[] split = pidsTask.get(i).processName.split("\\.");
+					app_name = split[split.length - 1];
+					// app_name = "Error";
+				}
+				processObj.AppName = app_name.toString();
+
+				if (process_list != null && !process_list.isEmpty())
+					if (isDuplicate(processObj.processID))
+						continue;
+				process_list.add(processObj);
+			}// End of For loop
+			removeExpiredPID(pid_arlist);
+		} catch (Exception ex) {
+			Log.w("NEOM:Error", ex.toString(), ex);
+		}
+
+		return process_list;
 	}
 
 	/*
@@ -304,14 +347,17 @@ public class MonitorFragment extends ListFragment implements
 
 	}
 
-	private void getProcessMemInfo(int PID) {
+	private float[] getProcessMemInfo(int PID) {
 		ActivityManager activityManagerMEM = (ActivityManager) getActivity()
 				.getSystemService(Context.ACTIVITY_SERVICE);
-		int ar[];
-
+		float[] memInfoModel = new float[3];
 		MemoryInfo mi[];// = new MemoryInfo();
 
 		mi = activityManagerMEM.getProcessMemoryInfo(new int[] { PID });
+		memInfoModel[0] = mi[0].getTotalPss() / 1000;// In KB
+		memInfoModel[1] = mi[0].getTotalPrivateDirty() / 1000;
+		memInfoModel[2] = mi[0].getTotalSharedDirty() / 1000;
+		return memInfoModel;
 
 	}
 
