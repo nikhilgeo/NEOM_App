@@ -146,7 +146,7 @@ public class MonitorFragment extends ListFragment implements
 							mmsg.setData(mb);
 							handler.sendMessage(mmsg);
 
-							Thread.sleep(2000);
+							Thread.sleep(1000);
 
 						}
 					}
@@ -231,44 +231,6 @@ public class MonitorFragment extends ListFragment implements
 	// ------------------------Custom_Methods--------------------------------------
 	// ------------------------------------------------------------------------------
 
-	private void readTCPConnections() {
-		try {
-
-		} catch (Exception ex) {
-
-		}
-	}
-
-	private void getAllPID() {
-		try {
-			ExecuteCMD execmd = new ExecuteCMD();
-			String regex = "\\d+";
-			Pattern p = Pattern.compile(regex);
-			File proc_dir = new File("/proc");
-			String[] content_list = proc_dir.list();
-			String cmdOut;
-			for (String name : content_list) {
-				if (new File("/proc/" + name).isDirectory()) {
-					Matcher m = p.matcher(name);
-					if (m.matches()) {
-						String[] cmd = { "ls -l " + "/proc/" + name + "/exe" };
-						cmdOut = execmd.RunAsRoot(cmd);
-						if (cmdOut == null) {
-							cmdOut = "Kernel Process";
-							Log.i("NEOM in getPID", "NULL");
-						} else
-							Log.i("NEOM in getPID", cmdOut);
-
-						// getProcessName(name)
-					}
-				}
-			}
-		} catch (Exception ex) {
-			Log.i("NEOM in getPID", ex.toString());
-		}
-
-	}
-
 	private List<Model_Process> getJavaProcessPID() {
 
 		try {
@@ -299,16 +261,15 @@ public class MonitorFragment extends ListFragment implements
 					// app_name = pm.getNameForUid(pidsTask.get(i).uid);
 
 				} catch (Exception ex) {
-					Log.w("NEOM:Error", ex.toString(), ex);
+					// Log.w("NEOM:Error", ex.toString(), ex);
 					String[] split = pidsTask.get(i).processName.split("\\.");
 					app_name = split[split.length - 1];
 					// app_name = "Error";
 				}
 				processObj.AppName = app_name.toString();
 
-				if (process_list != null && !process_list.isEmpty())
-					if (isDuplicate(processObj.processID))
-						continue;
+				if (process_list != null && isDuplicate(processObj))
+					continue;
 				process_list.add(processObj);
 			}// End of For loop
 			removeExpiredPID(pid_arlist);
@@ -322,22 +283,27 @@ public class MonitorFragment extends ListFragment implements
 	/*
 	 * Check if PID already exist in the List before adding
 	 */
-	private Boolean isDuplicate(int PID) {
+	private Boolean isDuplicate(Model_Process processObj) {
+		int replacePos = -1;
 		for (Model_Process pro : process_list) {
-			if (pro.processID == PID)
-				return true;
+			if (pro.processID.equals(processObj.processID)) {
+				replacePos = process_list.indexOf(pro);
+				break;
+			}
+		}
+		if (replacePos != -1) {
+			process_list.set(replacePos, processObj);
+			return true;
 		}
 		return false;
+
 	}
 
 	/*
 	 * Remove the stopped process from the process list
 	 */
 	private void removeExpiredPID(ArrayList<Integer> pids) {
-		// for (Model_Process pro : process_list) {
-		// if (!pids.contains(pro.processID))
-		// process_list.remove(pro);
-		// }
+
 		for (Iterator<Model_Process> iterator = process_list.iterator(); iterator
 				.hasNext();) {
 			Model_Process pro = iterator.next();
@@ -361,70 +327,7 @@ public class MonitorFragment extends ListFragment implements
 
 	}
 
-	// private String executeCommand(String command) {
-	//
-	// StringBuffer output = new StringBuffer();
-	//
-	// Process p;
-	// try {
-	// p = Runtime.getRuntime().exec(command);
-	// p.waitFor();
-	// BufferedReader reader = new BufferedReader(new InputStreamReader(
-	// p.getInputStream()));
-	//
-	// String line = "";
-	// while ((line = reader.readLine()) != null) {
-	// output.append(line + "\n");
-	// }
-	//
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	//
-	// return output.toString();
-	//
-	// }
-
-	// private void exeRoot()
-	// {
-	// try
-	// {
-	// Command command = new Command(0, "echo this is a command",
-	// "echo this is another command")
-	// {
-	// @Override
-	// public void output(int id, String line)
-	// {
-	// //(Do something with the output here)
-	// }
-	//
-	// @Override
-	// public void commandCompleted(int arg0, int arg1) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	//
-	// @Override
-	// public void commandOutput(int arg0, String arg1) {
-	// // TODO Auto-generated method stub
-	// int len
-	//
-	// }
-	//
-	// @Override
-	// public void commandTerminated(int arg0, String arg1) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	// };
-	// RootTools.getShell(true).add(command);
-	// }
-	// catch(Exception ex)
-	// {
-	//
-	// }
-	// }
-
+	
 	// -------------------------------------------------------------------------------
 	// ------------------------Factory_Methods--------------------------------------
 	// -------------------------------------------------------------------------------
