@@ -1,8 +1,11 @@
 package com.nikhil.neom;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.util.Log;
 
@@ -61,7 +64,7 @@ public class Utilities {
 		}
 	}
 
-	public ArrayList<Connection> getConnections(String PID) {
+	public ArrayList<Connection> getPIDConnections(String PID) {
 		ArrayList<Connection> connections = new ArrayList<Connection>();
 
 		try {
@@ -71,13 +74,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				LogCat.d("Netstat: " + line);
-				String[] fields = line.split("\\s+", 10);
+				//LogCat.d("Netstat: " + line);
+				String[] fields = line.split("\\s+", 10);//split by white space
 				int fieldn = 0;
 
-				for (String field : fields) {
-					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-				}
+//				for (String field : fields) {
+//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+//				}
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -104,13 +107,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				LogCat.d("Netstat: " + line);
+				//LogCat.d("Netstat: " + line);
 				String[] fields = line.split("\\s+", 10);
 				int fieldn = 0;
 
-				for (String field : fields) {
-					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-				}
+//				for (String field : fields) {
+//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+//				}
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -136,13 +139,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				LogCat.d("Netstat: " + line);
+				//LogCat.d("Netstat: " + line);
 				String[] fields = line.split("\\s+", 10);
 				int fieldn = 0;
 
-				for (String field : fields) {
-					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-				}
+//				for (String field : fields) {
+//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+//				}
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -170,13 +173,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				LogCat.d("Netstat: " + line);
+				//LogCat.d("Netstat: " + line);
 				String[] fields = line.split("\\s+", 10);
 				int fieldn = 0;
 
-				for (String field : fields) {
-					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-				}
+//				for (String field : fields) {
+				// LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+//				}
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -205,5 +208,36 @@ public class Utilities {
 		return connections;
 	}
     
+	
+	private void getAllPID() {
+		try {
+			ExecuteCMD execmd = new ExecuteCMD();
+			String regex = "\\d+";
+			Pattern p = Pattern.compile(regex);
+			File proc_dir = new File("/proc");
+			String[] content_list = proc_dir.list();
+			String cmdOut;
+			for (String name : content_list) {
+				if (new File("/proc/" + name).isDirectory()) {
+					Matcher m = p.matcher(name);
+					if (m.matches()) {
+						String[] cmd = { "ls -l " + "/proc/" + name + "/exe" };
+						cmdOut = execmd.RunAsRoot(cmd);
+						if (cmdOut == null) {
+							cmdOut = "Kernel Process";
+							Log.i("NEOM in getPID", "NULL");
+						} else
+							Log.i("NEOM in getPID", cmdOut);
+
+						// getProcessName(name)
+					}
+				}
+			}
+		} catch (Exception ex) {
+			Log.i("NEOM in getPID", ex.toString());
+		}
+
+	}
+
 	
 }
