@@ -48,20 +48,22 @@ public class MainActivity extends Activity implements
 		FragmentManager fragmentManager = getFragmentManager();
 
 		switch (position) {
+		case 0:
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, MonitorFragment.newInstance())
+					.commit();
+
+			break;
 		case 1:
-			fragmentManager
-					.beginTransaction()
-					.replace(R.id.container,
-							MonitorFragment.newInstance())
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, NWMonitorFragment.newInstance())
 					.commit();
 
 			break;
 		default:
-			fragmentManager
-			.beginTransaction()
-			.replace(R.id.container,
-					MonitorFragment.newInstance())
-			.commit();
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, MonitorFragment.newInstance())
+					.commit();
 
 		}
 
@@ -113,5 +115,4 @@ public class MainActivity extends Activity implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	
 }
