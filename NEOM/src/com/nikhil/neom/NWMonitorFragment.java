@@ -39,21 +39,17 @@ public class NWMonitorFragment extends ListFragment implements
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
+
 
 	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
 
-	private OnFragmentInteractionListener mListener;
+
+
 
 	private List<Model_Connection> connection_list = new ArrayList<Model_Connection>();
-	private static final String ARG_SECTION_NUMBER = "section_number";
-	private String section_number;
-	private Thread monitorNWThread, execmdThread;
+
+	private Thread monitorNWThread;
 	private Handler nwhandler;
-	private int counter = 0; // For test TBR
 
 	private MyListAdapter myNWListAdapter;
 
@@ -233,8 +229,8 @@ public class NWMonitorFragment extends ListFragment implements
 			connectionObj.con = util.getPIDConnections(connectionObj.processID
 					.toString());
 			for (Utilities.Connection conObj : connectionObj.con) {
-				connectionObj.connections = "SRC:" + conObj.src + ":"
-						+ conObj.spt + " DST:" + conObj.dst + ":" + conObj.dpt
+				connectionObj.connections = connectionObj.connections +  conObj.src + ":"
+						+ conObj.spt + "|" + conObj.dst + ":" + conObj.dpt
 						+ " " + conObj.pro + "\n";
 			}
 			connectionObj.connections = connectionObj.connections.trim();// trim
@@ -254,8 +250,10 @@ public class NWMonitorFragment extends ListFragment implements
 
 			} catch (Exception ex) {
 				// Log.w("NEOM:Error", ex.toString(), ex);
-				String[] split = pidsTask.get(i).processName.split("\\.");
-				app_name = split[split.length - 1];
+				String[] split_dot = pidsTask.get(i).processName.split("\\.");
+				app_name = split_dot[split_dot.length - 1];
+				String[] split_colon = app_name.toString().split("\\:");
+				app_name = split_colon[split_colon.length - 1];
 
 				// app_name = "Error";
 			} // End of Catch
@@ -341,7 +339,7 @@ public class NWMonitorFragment extends ListFragment implements
 							.findViewById(R.id.txtappname);
 					txtappname.setText(conItem.appName);
 					TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
-					txtpid.setText(Integer.toString(conItem.processID));
+					txtpid.setText("PID:" + Integer.toString(conItem.processID));
 					// TextView pname = (TextView) row.findViewById(R.id.);
 					// pname.setText(processItem.processName);
 					// TextView uid = (TextView) row.findViewById(R.id.txtuid);

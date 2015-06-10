@@ -52,13 +52,13 @@ public class MainActivity extends Activity implements
 			fragmentManager.beginTransaction()
 					.replace(R.id.container, MonitorFragment.newInstance())
 					.commit();
-
+			mTitle = getString(R.string.title_section1);
 			break;
 		case 1:
 			fragmentManager.beginTransaction()
 					.replace(R.id.container, NWMonitorFragment.newInstance())
 					.commit();
-
+			mTitle = getString(R.string.title_section2);
 			break;
 		default:
 			fragmentManager.beginTransaction()
@@ -69,20 +69,7 @@ public class MainActivity extends Activity implements
 
 	}
 
-	public void onSectionAttached(int number) {
-		switch (number) {
-		case 1:
-			mTitle = getString(R.string.title_section1);
-			break;
-		case 2:
-			mTitle = getString(R.string.title_section2);
-			break;
-		case 3:
-			mTitle = getString(R.string.title_section3);
-			break;
-		}
-	}
-
+	
 	public void restoreActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
