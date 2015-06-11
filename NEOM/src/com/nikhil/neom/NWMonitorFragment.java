@@ -40,11 +40,7 @@ public class NWMonitorFragment extends ListFragment implements
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-
 	// TODO: Rename and change types of parameters
-
-
-
 
 	private List<Model_Connection> connection_list = new ArrayList<Model_Connection>();
 
@@ -228,10 +224,11 @@ public class NWMonitorFragment extends ListFragment implements
 			pid_arlist.add(connectionObj.processID);
 			connectionObj.con = util.getPIDConnections(connectionObj.processID
 					.toString());
+			connectionObj.connections = "";
 			for (Utilities.Connection conObj : connectionObj.con) {
-				connectionObj.connections = connectionObj.connections +  conObj.src + ":"
-						+ conObj.spt + "|" + conObj.dst + ":" + conObj.dpt
-						+ " " + conObj.pro + "\n";
+				connectionObj.connections = connectionObj.connections
+						+ conObj.src + ":" + conObj.spt + "|" + conObj.dst
+						+ ":" + conObj.dpt + " " + conObj.pro + "\n";
 			}
 			connectionObj.connections = connectionObj.connections.trim();// trim
 																			// traling
