@@ -14,14 +14,15 @@ public class Utilities {
 			"FWAIT2", "TMEWAIT", "CLOSED", "CLSWAIT", "LASTACK", "LISTEN",
 			"CLOSING", "UNKNOWN" };
 
-	public class Connection {
-		String src;
-		String spt;
-		String dst;
-		String dpt;
-		String uid;
-		String pro;
-	}
+//	public class Connection {
+//		String src;
+//		String spt;
+//		String dst;
+//		String dpt;
+//		String uid;
+//		String pro;
+//		String status;
+//	}
 
 	private final String getAddress(final String hexa) {
 		try {
@@ -64,8 +65,8 @@ public class Utilities {
 		}
 	}
 
-	public ArrayList<Connection> getPIDConnections(String PID) {
-		ArrayList<Connection> connections = new ArrayList<Connection>();
+	public ArrayList<ConnectionChild> getPIDConnections(String PID) {
+		ArrayList<ConnectionChild> connections = new ArrayList<ConnectionChild>();
 
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("/proc/"
@@ -86,7 +87,7 @@ public class Utilities {
 					continue;
 				}
 
-				Connection connection = new Connection();
+				ConnectionChild connection = new ConnectionChild();
 
 				String src[] = fields[1].split(":", 2);
 				String dst[] = fields[2].split(":", 2);
@@ -119,7 +120,7 @@ public class Utilities {
 					continue;
 				}
 
-				Connection connection = new Connection();
+				ConnectionChild connection = new ConnectionChild();
 				String src[] = fields[1].split(":", 2);
 				String dst[] = fields[2].split(":", 2);
 				connection.src = getAddress(src[0]);
@@ -151,7 +152,7 @@ public class Utilities {
 					continue;
 				}
 
-				Connection connection = new Connection();
+				ConnectionChild connection = new ConnectionChild();
 
 				String src[] = fields[1].split(":", 2);
 				String dst[] = fields[2].split(":", 2);
@@ -185,7 +186,7 @@ public class Utilities {
 					continue;
 				}
 
-				Connection connection = new Connection();
+				ConnectionChild connection = new ConnectionChild();
 
 				String src[] = fields[1].split(":", 2);
 				String dst[] = fields[2].split(":", 2);

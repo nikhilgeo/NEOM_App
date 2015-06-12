@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +48,7 @@ public class NWMonitorFragment extends ListFragment implements
 	private Thread monitorNWThread;
 	private Handler nwhandler;
 
-	private MyListAdapter myNWListAdapter;
+	private ExpandListAdapter myNWListAdapter;
 
 	// TODO: Rename and change types of parameters
 	public static NWMonitorFragment newInstance() {
@@ -151,8 +152,8 @@ public class NWMonitorFragment extends ListFragment implements
 
 		// endregion monitoring : NG
 
-		myNWListAdapter = new MyListAdapter(getActivity(),
-				R.layout.nw_list_item, connection_list);
+		myNWListAdapter = new ExpandListAdapter(getActivity(),
+				R.layout.con_group, connection_list);
 
 		setListAdapter(myNWListAdapter);
 		getListView().setOnItemClickListener(this);
@@ -303,66 +304,177 @@ public class NWMonitorFragment extends ListFragment implements
 	 * Custom Adapter to bind custom row layout Change the ArrayAdapter<T>
 	 * according to the type you want to populate the row
 	 */
-	public class MyListAdapter extends ArrayAdapter<Model_Connection> {
+//	public class MyListAdapter extends ArrayAdapter<Model_Connection> {
+//
+//		Context myContext;
+//
+//		public MyListAdapter(Context context, int textViewResourceId,
+//				List<Model_Connection> objects) {
+//			super(context, textViewResourceId, objects);
+//			myContext = context;
+//		}
+//
+//		@Override
+//		public View getView(int position, View convertView, ViewGroup parent) {
+//			LayoutInflater inflater = (LayoutInflater) myContext
+//					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//			View row = inflater.inflate(R.layout.nw_list_item, parent, false);
+//			try {
+//
+//				// View condetrow = inflater.inflate(R.layout.connection_layout,
+//				// parent, false);
+//
+//				// For alternate row color
+//				if (position % 2 == 1) {
+//					row.setBackgroundColor(Color.TRANSPARENT);
+//				} else {
+//					row.setBackgroundColor(Color.WHITE);
+//				}
+//
+//				if (connection_list != null) {
+//					Model_Connection conItem = connection_list.get(position);
+//					TextView txtappname = (TextView) row
+//							.findViewById(R.id.txtappname);
+//					txtappname.setText(conItem.appName);
+//					TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
+//					txtpid.setText("PID:" + Integer.toString(conItem.processID));
+//					// TextView pname = (TextView) row.findViewById(R.id.);
+//					// pname.setText(processItem.processName);
+//					// TextView uid = (TextView) row.findViewById(R.id.txtuid);
+//					// uid.setText(Integer.toString(processItem.userID));
+//					// TextView txtpss = (TextView)
+//					// row.findViewById(R.id.txtpss);
+//					// txtpss.setText(Float.toString(processItem.memInfo[0]) +
+//					// "MB");
+//					// TextView txtpvtdirty = (TextView) row
+//					// .findViewById(R.id.txtpvtdirty);
+//					// txtpvtdirty.setText(Float.toString(processItem.memInfo[1])
+//					// + "MB");
+//					// TextView txtshrdirty = (TextView) row
+//					// .findViewById(R.id.txtshrdirty);
+//					// txtshrdirty.setText(Float.toString(processItem.memInfo[2])
+//					// + "MB");
+//					TextView txtnwcon = (TextView) row
+//							.findViewById(R.id.txtnwcon);
+//					txtnwcon.setText(conItem.connections);
+//
+//				}
+//			} catch (Exception ex) {
+//				Log.w("NetworkLog", ex.toString(), ex);
+//			}
+//			return row;
+//		}
+//	}
 
-		Context myContext;
+	public class ExpandListAdapter extends BaseExpandableListAdapter {
 
-		public MyListAdapter(Context context, int textViewResourceId,
-				List<Model_Connection> objects) {
-			super(context, textViewResourceId, objects);
-			myContext = context;
+		private Context context;
+		private ArrayList<ConnectionGroup> groups;
+
+		public ExpandListAdapter(Context context,
+				ArrayList<ConnectionGroup> groups) {
+			this.context = context;
+			this.groups = groups;
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = (LayoutInflater) myContext
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View row = inflater.inflate(R.layout.nw_list_item, parent, false);
-			try {
-
-				// View condetrow = inflater.inflate(R.layout.connection_layout,
-				// parent, false);
-
-				// For alternate row color
-				if (position % 2 == 1) {
-					row.setBackgroundColor(Color.TRANSPARENT);
-				} else {
-					row.setBackgroundColor(Color.WHITE);
-				}
-
-				if (connection_list != null) {
-					Model_Connection conItem = connection_list.get(position);
-					TextView txtappname = (TextView) row
-							.findViewById(R.id.txtappname);
-					txtappname.setText(conItem.appName);
-					TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
-					txtpid.setText("PID:" + Integer.toString(conItem.processID));
-					// TextView pname = (TextView) row.findViewById(R.id.);
-					// pname.setText(processItem.processName);
-					// TextView uid = (TextView) row.findViewById(R.id.txtuid);
-					// uid.setText(Integer.toString(processItem.userID));
-					// TextView txtpss = (TextView)
-					// row.findViewById(R.id.txtpss);
-					// txtpss.setText(Float.toString(processItem.memInfo[0]) +
-					// "MB");
-					// TextView txtpvtdirty = (TextView) row
-					// .findViewById(R.id.txtpvtdirty);
-					// txtpvtdirty.setText(Float.toString(processItem.memInfo[1])
-					// + "MB");
-					// TextView txtshrdirty = (TextView) row
-					// .findViewById(R.id.txtshrdirty);
-					// txtshrdirty.setText(Float.toString(processItem.memInfo[2])
-					// + "MB");
-					TextView txtnwcon = (TextView) row
-							.findViewById(R.id.txtnwcon);
-					txtnwcon.setText(conItem.connections);
-
-				}
-			} catch (Exception ex) {
-				Log.w("NetworkLog", ex.toString(), ex);
-			}
-			return row;
+		public Object getChild(int groupPosition, int childPosition) {
+			ArrayList<ConnectionChild> chList = groups.get(groupPosition)
+					.getItems();
+			return chList.get(childPosition);
 		}
+
+		@Override
+		public long getChildId(int groupPosition, int childPosition) {
+			return childPosition;
+		}
+
+		@Override
+		public View getChildView(int groupPosition, int childPosition,
+				boolean isLastChild, View convertView, ViewGroup parent) {
+
+			ConnectionChild child = (ConnectionChild) getChild(groupPosition,
+					childPosition);
+			if (convertView == null) {
+				LayoutInflater infalInflater = (LayoutInflater) context
+						.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+				convertView = infalInflater.inflate(R.layout.con_child, null);
+			}
+			TextView txtsrc = (TextView) convertView.findViewById(R.id.txtsrc);
+			txtsrc.setText(child.src);
+
+			TextView txtspt = (TextView) convertView.findViewById(R.id.txtspt);
+			txtsrc.setText(child.spt);
+
+			TextView txtdst = (TextView) convertView.findViewById(R.id.txtdst);
+			txtsrc.setText(child.dst);
+
+			TextView txtpro = (TextView) convertView.findViewById(R.id.txtpro);
+			txtsrc.setText(child.pro);
+
+			TextView txtstatus = (TextView) convertView
+					.findViewById(R.id.txtstatus);
+			txtstatus.setText(child.status);
+			
+			return convertView;
+		}
+
+		@Override
+		public int getChildrenCount(int groupPosition) {
+			ArrayList<ConnectionChild> chList = groups.get(groupPosition)
+					.getItems();
+			return chList.size();
+		}
+
+		@Override
+		public Object getGroup(int groupPosition) {
+			return groups.get(groupPosition);
+		}
+
+		@Override
+		public int getGroupCount() {
+			return groups.size();
+		}
+
+		@Override
+		public long getGroupId(int groupPosition) {
+			return groupPosition;
+		}
+
+		@Override
+		public View getGroupView(int groupPosition, boolean isExpanded,
+				View convertView, ViewGroup parent) {
+			ConnectionGroup group = (ConnectionGroup) getGroup(groupPosition);
+			if (convertView == null) {
+				LayoutInflater inf = (LayoutInflater) context
+						.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+				convertView = inf.inflate(R.layout.con_group, null);
+			}
+			TextView txtappname = (TextView) convertView.findViewById(R.id.txtappname);
+			txtappname.setText(group.AppName);
+			
+			TextView txtpid = (TextView) convertView.findViewById(R.id.txtpid);
+			txtpid.setText(group.processID);
+			
+			TextView txtsnd = (TextView) convertView.findViewById(R.id.txtsnd);
+			txtsnd.setText(group.dataSND);
+			
+			TextView txtrev = (TextView) convertView.findViewById(R.id.txtrev);
+			txtrev.setText(group.dataRCV);
+			
+			return convertView;
+		}
+
+		@Override
+		public boolean hasStableIds() {
+			return true;
+		}
+
+		@Override
+		public boolean isChildSelectable(int groupPosition, int childPosition) {
+			return true;
+		}
+
 	}
 
 	@Override
