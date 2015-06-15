@@ -3,9 +3,12 @@ package com.nikhil.neom;
 import java.util.ArrayList;
 
 public class Model_Connection {
+	Boolean isAppInfo;
 	String appName;
 	Integer processID;
-	String sndrev;
+	String snd;
+	String rcv;
 	String connections;
 	ArrayList<Utilities.Connection> con;
+
 }
