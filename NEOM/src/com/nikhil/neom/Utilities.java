@@ -12,7 +12,7 @@ import android.util.Log;
 public class Utilities {
 	final String states[] = { "ESTBLSH", "SYNSENT", "SYNRECV", "FWAIT1",
 			"FWAIT2", "TMEWAIT", "CLOSED", "CLSWAIT", "LASTACK", "LISTEN",
-			"CLOSING", "UNKNOWN" };
+			"CLOSING", "NSYNRECV" };
 
 	public class Connection {
 		String src;
@@ -21,6 +21,7 @@ public class Utilities {
 		String dpt;
 		String uid;
 		String pro;
+		String stat; // Chnage
 	}
 
 	private final String getAddress(final String hexa) {
@@ -31,7 +32,7 @@ public class Utilities {
 			return ((adr >> 24) & 0xff) + "." + ((adr >> 16) & 0xff) + "."
 					+ ((adr >> 8) & 0xff) + "." + (adr & 0xff);
 		} catch (Exception e) {
-			Log.w("NetworkLog", e.toString(), e);
+			Log.w("NEOM", e.toString(), e);
 			return "-1.-1.-1.-1";
 		}
 	}
@@ -50,7 +51,7 @@ public class Utilities {
 				return "-2.-2.-2.-2";
 			}
 		} catch (Exception e) {
-			Log.w("NetworkLog", e.toString(), e);
+			Log.w("NEOM", e.toString(), e);
 			return "-1.-1.-1.-1";
 		}
 	}
@@ -59,7 +60,7 @@ public class Utilities {
 		try {
 			return Integer.parseInt(hexa, 16);
 		} catch (Exception e) {
-			Log.w("NetworkLog", e.toString(), e);
+			Log.w("NEOM", e.toString(), e);
 			return -1;
 		}
 	}
@@ -74,13 +75,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				//LogCat.d("Netstat: " + line);
-				String[] fields = line.split("\\s+", 10);//split by white space
+				// LogCat.d("Netstat: " + line);
+				String[] fields = line.split("\\s+", 10);// split by white space
 				int fieldn = 0;
 
-//				for (String field : fields) {
-//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-//				}
+				// for (String field : fields) {
+				// LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+				// }
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -97,7 +98,8 @@ public class Utilities {
 				connection.dpt = String.valueOf(getInt16(dst[1]));
 				connection.uid = fields[7];
 				connection.pro = "TCP";
-
+				Integer conStat = getInt16(fields[3]);
+				connection.stat = states[conStat - 1];
 				connections.add(connection);
 			}
 
@@ -107,13 +109,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				//LogCat.d("Netstat: " + line);
+				// LogCat.d("Netstat: " + line);
 				String[] fields = line.split("\\s+", 10);
 				int fieldn = 0;
 
-//				for (String field : fields) {
-//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-//				}
+				// for (String field : fields) {
+				// LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+				// }
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -128,7 +130,8 @@ public class Utilities {
 				connection.dpt = String.valueOf(getInt16(dst[1]));
 				connection.uid = fields[7];
 				connection.pro = "UDP";
-
+				Integer conStat = getInt16(fields[3]);
+				connection.stat = states[conStat - 1];
 				connections.add(connection);
 			}
 
@@ -139,13 +142,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				//LogCat.d("Netstat: " + line);
+				// LogCat.d("Netstat: " + line);
 				String[] fields = line.split("\\s+", 10);
 				int fieldn = 0;
 
-//				for (String field : fields) {
-//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-//				}
+				// for (String field : fields) {
+				// LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+				// }
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -162,7 +165,8 @@ public class Utilities {
 				connection.dpt = String.valueOf(getInt16(dst[1]));
 				connection.uid = fields[7];
 				connection.pro = "TCP6";
-
+				Integer conStat = getInt16(fields[3]);
+				connection.stat = states[conStat - 1];
 				connections.add(connection);
 			}
 
@@ -173,13 +177,13 @@ public class Utilities {
 
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
-				//LogCat.d("Netstat: " + line);
+				// LogCat.d("Netstat: " + line);
 				String[] fields = line.split("\\s+", 10);
 				int fieldn = 0;
 
-//				for (String field : fields) {
+				// for (String field : fields) {
 				// LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-//				}
+				// }
 
 				if (fields[0].equals("sl")) {
 					continue;
@@ -197,18 +201,19 @@ public class Utilities {
 				connection.uid = fields[7];
 				connection.pro = "UDP6";
 
+				Integer conStat = getInt16(fields[3]);
+				connection.stat = states[conStat - 1];
 				connections.add(connection);
 			}
 
 			in.close();
 		} catch (Exception e) {
-			Log.w("NetworkLog", e.toString(), e);
+			Log.w("NEOM", e.toString(), e);
 		}
 
 		return connections;
 	}
-    
-	
+
 	private void getAllPID() {
 		try {
 			ExecuteCMD execmd = new ExecuteCMD();
@@ -239,5 +244,4 @@ public class Utilities {
 
 	}
 
-	
 }
