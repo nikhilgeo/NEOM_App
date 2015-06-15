@@ -1,19 +1,9 @@
 package com.nikhil.neom;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import android.R.integer;
-import android.R.string;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ListFragment;
@@ -36,11 +26,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nikhil.neom.Utilities.Connection;
-import com.stericson.RootTools.RootTools;
-import com.stericson.RootTools.execution.Command;
-import com.stericson.RootTools.execution.CommandCapture;
-
 /**
  * A simple {@link Fragment} subclass. Activities that contain this fragment
  * must implement the {@link MonitorFragment.OnFragmentInteractionListener}
@@ -53,11 +38,8 @@ public class MonitorFragment extends ListFragment implements
 		OnItemClickListener {
 
 	private List<Model_Process> process_list = new ArrayList<Model_Process>();
-	private static final String ARG_SECTION_NUMBER = "section_number";
-	private String section_number;
-	private Thread monitorThread, execmdThread;
+	private Thread monitorThread;
 	private Handler handler;
-	private int counter = 0; // For test TBR
 
 	private MyListAdapter myListAdapter;
 
