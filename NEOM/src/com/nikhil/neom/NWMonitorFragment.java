@@ -22,6 +22,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -224,21 +226,22 @@ public class NWMonitorFragment extends ListFragment implements
 			pid_arlist.add(connectionObj.processID);
 			connectionObj.con = util.getPIDConnections(connectionObj.processID
 					.toString());
-			connectionObj.connections = "";
-			for (Utilities.Connection conObj : connectionObj.con) {
-				connectionObj.connections = connectionObj.connections
-						+ conObj.src + ":" + conObj.spt + "|" + conObj.dst
-						+ ":" + conObj.dpt + " " + conObj.pro + "\n";
-			}
-			connectionObj.connections = connectionObj.connections.trim();// trim
-																			// traling
-																			// white
-																			// and
-																			// newline
+			// connectionObj.connections = "";
+			// for (Utilities.Connection conObj : connectionObj.con) {
+			// connectionObj.connections = connectionObj.connections
+			// + conObj.src + ":" + conObj.spt + "|" + conObj.dst
+			// + ":" + conObj.dpt + " " + conObj.pro + "\n";
+			// }
+			// connectionObj.connections = connectionObj.connections.trim();//
+			// trim
+			// // traling
+			// // white
+			// // and
+			// // newline
 			CharSequence app_name;
-			if (connectionObj.connections == null) {
-				connectionObj.connections = "No Network Connection";
-			}
+			// if (connectionObj.connections == null) {
+			// connectionObj.connections = "No Network Connection";
+			// }
 			try {
 				app_name = pm.getApplicationLabel(pm.getApplicationInfo(
 						pidsTask.get(i).processName,
@@ -318,6 +321,7 @@ public class NWMonitorFragment extends ListFragment implements
 			LayoutInflater inflater = (LayoutInflater) myContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View row = inflater.inflate(R.layout.nw_list_item, parent, false);
+
 			try {
 
 				// View condetrow = inflater.inflate(R.layout.connection_layout,
@@ -353,10 +357,62 @@ public class NWMonitorFragment extends ListFragment implements
 					// .findViewById(R.id.txtshrdirty);
 					// txtshrdirty.setText(Float.toString(processItem.memInfo[2])
 					// + "MB");
-					TextView txtnwcon = (TextView) row
-							.findViewById(R.id.txtnwcon);
-					txtnwcon.setText(conItem.connections);
 
+					// TextView txtnwcon = (TextView) row
+					// .findViewById(R.id.txtnwcon);
+					// txtnwcon.setText(conItem.connections);
+
+					TableLayout tlhd = (TableLayout) row
+							.findViewById(R.id.tbllayout);
+					TableRow tblrowHeader = (TableRow) inflater.inflate(
+							R.layout.table_row, parent, false);
+					TextView tblsrchd = (TextView) tblrowHeader
+							.findViewById(R.id.tblsrc);
+					tblsrchd.setText("SRC IP");
+					TextView tblspthd = (TextView) tblrowHeader
+							.findViewById(R.id.tblspt);
+					tblspthd.setText("PORT");
+					TextView tbldsthd = (TextView) tblrowHeader
+							.findViewById(R.id.tbldst);
+					tbldsthd.setText("DST IP");
+					TextView tbldpthd = (TextView) tblrowHeader
+							.findViewById(R.id.tbldpt);
+					tbldpthd.setText("PORT");
+					TextView tblprohd = (TextView) tblrowHeader
+							.findViewById(R.id.tblpro);
+					tblprohd.setText("PRO");
+					TextView tblstathd = (TextView) tblrowHeader
+							.findViewById(R.id.tblstat);
+					tblstathd.setText("STAT");
+					tlhd.addView(tblrowHeader);
+
+					for (Utilities.Connection conObj : conItem.con) {
+
+						TableLayout tl = (TableLayout) row
+								.findViewById(R.id.tbllayout);
+
+						TableRow tblrow = (TableRow) inflater.inflate(
+								R.layout.table_row, parent, false);
+						TextView tblsrc = (TextView) tblrow
+								.findViewById(R.id.tblsrc);
+						tblsrc.setText(conObj.src);
+						TextView tblspt = (TextView) tblrow
+								.findViewById(R.id.tblspt);
+						tblspt.setText(conObj.spt);
+						TextView tbldst = (TextView) tblrow
+								.findViewById(R.id.tbldst);
+						tbldst.setText(conObj.dst);
+						TextView tbldpt = (TextView) tblrow
+								.findViewById(R.id.tbldpt);
+						tbldpt.setText(conObj.dpt);
+						TextView tblpro = (TextView) tblrow
+								.findViewById(R.id.tblpro);
+						tblpro.setText(conObj.pro);
+						TextView tblstat = (TextView) tblrow
+								.findViewById(R.id.tblstat);
+						tblstat.setText(conObj.stat);
+						tl.addView(tblrow);
+					}
 				}
 			} catch (Exception ex) {
 				Log.w("NetworkLog", ex.toString(), ex);
