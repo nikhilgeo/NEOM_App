@@ -226,18 +226,7 @@ public class NWMonitorFragment extends ListFragment implements
 			pid_arlist.add(connectionObj.processID);
 			connectionObj.con = util.getPIDConnections(connectionObj.processID
 					.toString());
-			// connectionObj.connections = "";
-			// for (Utilities.Connection conObj : connectionObj.con) {
-			// connectionObj.connections = connectionObj.connections
-			// + conObj.src + ":" + conObj.spt + "|" + conObj.dst
-			// + ":" + conObj.dpt + " " + conObj.pro + "\n";
-			// }
-			// connectionObj.connections = connectionObj.connections.trim();//
-			// trim
-			// // traling
-			// // white
-			// // and
-			// // newline
+
 			CharSequence app_name;
 			// if (connectionObj.connections == null) {
 			// connectionObj.connections = "No Network Connection";
@@ -321,6 +310,7 @@ public class NWMonitorFragment extends ListFragment implements
 			LayoutInflater inflater = (LayoutInflater) myContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View row = inflater.inflate(R.layout.nw_list_item, parent, false);
+			Integer trans = 0, recev = 0;
 
 			try {
 
@@ -362,29 +352,29 @@ public class NWMonitorFragment extends ListFragment implements
 					// .findViewById(R.id.txtnwcon);
 					// txtnwcon.setText(conItem.connections);
 
-					TableLayout tlhd = (TableLayout) row
-							.findViewById(R.id.tbllayout);
-					TableRow tblrowHeader = (TableRow) inflater.inflate(
-							R.layout.table_row, parent, false);
-					TextView tblsrchd = (TextView) tblrowHeader
-							.findViewById(R.id.tblsrc);
-					tblsrchd.setText("SRC IP");
-					TextView tblspthd = (TextView) tblrowHeader
-							.findViewById(R.id.tblspt);
-					tblspthd.setText("PORT");
-					TextView tbldsthd = (TextView) tblrowHeader
-							.findViewById(R.id.tbldst);
-					tbldsthd.setText("DST IP");
-					TextView tbldpthd = (TextView) tblrowHeader
-							.findViewById(R.id.tbldpt);
-					tbldpthd.setText("PORT");
-					TextView tblprohd = (TextView) tblrowHeader
-							.findViewById(R.id.tblpro);
-					tblprohd.setText("PRO");
-					TextView tblstathd = (TextView) tblrowHeader
-							.findViewById(R.id.tblstat);
-					tblstathd.setText("STAT");
-					tlhd.addView(tblrowHeader);
+//					TableLayout tlhd = (TableLayout) row
+//							.findViewById(R.id.tbllayout);
+//					TableRow tblrowHeader = (TableRow) inflater.inflate(
+//							R.layout.table_row, parent, false);
+//					TextView tblsrchd = (TextView) tblrowHeader
+//							.findViewById(R.id.tblsrc);
+//					tblsrchd.setText("SRC IP");
+//					TextView tblspthd = (TextView) tblrowHeader
+//							.findViewById(R.id.tblspt);
+//					tblspthd.setText("PORT");
+//					TextView tbldsthd = (TextView) tblrowHeader
+//							.findViewById(R.id.tbldst);
+//					tbldsthd.setText("DST IP");
+//					TextView tbldpthd = (TextView) tblrowHeader
+//							.findViewById(R.id.tbldpt);
+//					tbldpthd.setText("PORT");
+//					TextView tblprohd = (TextView) tblrowHeader
+//							.findViewById(R.id.tblpro);
+//					tblprohd.setText("PRO");
+//					TextView tblstathd = (TextView) tblrowHeader
+//							.findViewById(R.id.tblstat);
+//					tblstathd.setText("STAT");
+//					tlhd.addView(tblrowHeader);
 
 					for (Utilities.Connection conObj : conItem.con) {
 
@@ -412,7 +402,54 @@ public class NWMonitorFragment extends ListFragment implements
 								.findViewById(R.id.tblstat);
 						tblstat.setText(conObj.stat);
 						tl.addView(tblrow);
-					}
+
+						if (conObj.data_TRRV != null) {
+							for (Utilities.Trans_Recev trans_Recev : conObj.data_TRRV) {
+								TableLayout tlInterface = (TableLayout) row
+										.findViewById(R.id.tbllayoutInterface);
+
+								TableRow tlInterfacerow = (TableRow) inflater
+										.inflate(R.layout.interface_table_row,
+												parent, false);
+								TextView ifname = (TextView) tlInterfacerow
+										.findViewById(R.id.ifname);
+								ifname.setText(trans_Recev.interface_name);
+								TextView txttrans = (TextView) tlInterfacerow
+										.findViewById(R.id.trans);
+								trans = trans
+										+ Integer
+												.parseInt(trans_Recev.transmitted);
+								float tKB;
+								tKB = (float) (Integer
+										.parseInt(trans_Recev.transmitted) / 1048576);
+								txttrans.setText(Float.toString(tKB) + "KB");
+								TextView txtrecev = (TextView) tlInterfacerow
+										.findViewById(R.id.recev);
+								recev = recev
+										+ Integer
+												.parseInt(trans_Recev.received);
+								float sKB;
+								sKB = (float) (Integer
+										.parseInt(trans_Recev.received) / 1048576);
+								txtrecev.setText(Float.toString(sKB) + "KB");
+
+								tlInterface.addView(tlInterfacerow);
+							}
+
+						}// endif data_TRRV
+					}// endif connection
+
+					TextView txtsnd = (TextView) row.findViewById(R.id.txtsnd);
+					float transMB;
+					transMB = (float) (trans / 1048576);
+					txtsnd.setText(Float.toString(transMB) + "KB");
+					trans = 0;
+					TextView txtrev = (TextView) row.findViewById(R.id.txtrev);
+					float recevMB;
+					recevMB = (float) (recev / 1048576);
+					recev = 0;
+					txtrev.setText(Float.toString(recevMB) + "KB");
+
 				}
 			} catch (Exception ex) {
 				Log.w("NetworkLog", ex.toString(), ex);

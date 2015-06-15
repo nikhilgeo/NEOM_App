@@ -21,7 +21,16 @@ public class Utilities {
 		String dpt;
 		String uid;
 		String pro;
-		String stat; // Chnage
+		String stat;
+		ArrayList<Trans_Recev> data_TRRV;
+
+	}
+
+	public class Trans_Recev {
+		String interface_name;
+		String transmitted; // bytes
+		String received; // bytes
+
 	}
 
 	private final String getAddress(final String hexa) {
@@ -207,6 +216,34 @@ public class Utilities {
 			}
 
 			in.close();
+
+			in = new BufferedReader(new FileReader("/proc/" + PID + "/net/dev"));
+
+			while ((line = in.readLine()) != null) {
+				line = line.trim();
+				// LogCat.d("Netstat: " + line);
+				String[] fields = line.split("\\s+", 11);
+				int fieldn = 0;
+//				for (String field : fields) {
+//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+//				}
+				if (fields[0].equals("Inter-|") || fields[0].equals("face")) {
+					continue;
+				}
+
+				String Tran = fields[1];
+				if (!fields[1].equals("0")) {
+					Connection connection = new Connection();
+					Trans_Recev trans_Recev = new Trans_Recev();
+					trans_Recev.interface_name = fields[0];
+					trans_Recev.transmitted = fields[1];
+					trans_Recev.received = fields[9];
+					connection.data_TRRV = new ArrayList<Utilities.Trans_Recev>();
+					connection.data_TRRV.add(trans_Recev);
+					connections.add(connection);
+				}
+
+			}
 		} catch (Exception e) {
 			Log.w("NEOM", e.toString(), e);
 		}
