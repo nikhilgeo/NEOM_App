@@ -224,9 +224,9 @@ public class Utilities {
 				// LogCat.d("Netstat: " + line);
 				String[] fields = line.split("\\s+", 11);
 				int fieldn = 0;
-//				for (String field : fields) {
-//					LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
-//				}
+				// for (String field : fields) {
+				// LogCat.d("Field " + (fieldn++) + ": [" + field + "]");
+				// }
 				if (fields[0].equals("Inter-|") || fields[0].equals("face")) {
 					continue;
 				}
@@ -236,8 +236,8 @@ public class Utilities {
 					Connection connection = new Connection();
 					Trans_Recev trans_Recev = new Trans_Recev();
 					trans_Recev.interface_name = fields[0];
-					trans_Recev.transmitted = fields[1];
-					trans_Recev.received = fields[9];
+					trans_Recev.received = fields[1];
+					trans_Recev.transmitted = fields[9];
 					connection.data_TRRV = new ArrayList<Utilities.Trans_Recev>();
 					connection.data_TRRV.add(trans_Recev);
 					connections.add(connection);
