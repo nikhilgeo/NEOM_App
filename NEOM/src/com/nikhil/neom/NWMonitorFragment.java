@@ -314,10 +314,6 @@ public class NWMonitorFragment extends ListFragment implements
 
 			try {
 
-				// View condetrow = inflater.inflate(R.layout.connection_layout,
-				// parent, false);
-
-				// For alternate row color
 				if (position % 2 == 1) {
 					row.setBackgroundColor(Color.TRANSPARENT);
 				} else {
@@ -331,50 +327,6 @@ public class NWMonitorFragment extends ListFragment implements
 					txtappname.setText(conItem.appName);
 					TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
 					txtpid.setText("PID:" + Integer.toString(conItem.processID));
-					// TextView pname = (TextView) row.findViewById(R.id.);
-					// pname.setText(processItem.processName);
-					// TextView uid = (TextView) row.findViewById(R.id.txtuid);
-					// uid.setText(Integer.toString(processItem.userID));
-					// TextView txtpss = (TextView)
-					// row.findViewById(R.id.txtpss);
-					// txtpss.setText(Float.toString(processItem.memInfo[0]) +
-					// "MB");
-					// TextView txtpvtdirty = (TextView) row
-					// .findViewById(R.id.txtpvtdirty);
-					// txtpvtdirty.setText(Float.toString(processItem.memInfo[1])
-					// + "MB");
-					// TextView txtshrdirty = (TextView) row
-					// .findViewById(R.id.txtshrdirty);
-					// txtshrdirty.setText(Float.toString(processItem.memInfo[2])
-					// + "MB");
-
-					// TextView txtnwcon = (TextView) row
-					// .findViewById(R.id.txtnwcon);
-					// txtnwcon.setText(conItem.connections);
-
-//					TableLayout tlhd = (TableLayout) row
-//							.findViewById(R.id.tbllayout);
-//					TableRow tblrowHeader = (TableRow) inflater.inflate(
-//							R.layout.table_row, parent, false);
-//					TextView tblsrchd = (TextView) tblrowHeader
-//							.findViewById(R.id.tblsrc);
-//					tblsrchd.setText("SRC IP");
-//					TextView tblspthd = (TextView) tblrowHeader
-//							.findViewById(R.id.tblspt);
-//					tblspthd.setText("PORT");
-//					TextView tbldsthd = (TextView) tblrowHeader
-//							.findViewById(R.id.tbldst);
-//					tbldsthd.setText("DST IP");
-//					TextView tbldpthd = (TextView) tblrowHeader
-//							.findViewById(R.id.tbldpt);
-//					tbldpthd.setText("PORT");
-//					TextView tblprohd = (TextView) tblrowHeader
-//							.findViewById(R.id.tblpro);
-//					tblprohd.setText("PRO");
-//					TextView tblstathd = (TextView) tblrowHeader
-//							.findViewById(R.id.tblstat);
-//					tblstathd.setText("STAT");
-//					tlhd.addView(tblrowHeader);
 
 					for (Utilities.Connection conObj : conItem.con) {
 
@@ -421,7 +373,7 @@ public class NWMonitorFragment extends ListFragment implements
 												.parseInt(trans_Recev.transmitted);
 								float tKB;
 								tKB = (float) (Integer
-										.parseInt(trans_Recev.transmitted) / 1048576);
+										.parseInt(trans_Recev.transmitted) / 1024);
 								txttrans.setText(Float.toString(tKB) + "KB");
 								TextView txtrecev = (TextView) tlInterfacerow
 										.findViewById(R.id.recev);
@@ -430,7 +382,7 @@ public class NWMonitorFragment extends ListFragment implements
 												.parseInt(trans_Recev.received);
 								float sKB;
 								sKB = (float) (Integer
-										.parseInt(trans_Recev.received) / 1048576);
+										.parseInt(trans_Recev.received) / 1024);
 								txtrecev.setText(Float.toString(sKB) + "KB");
 
 								tlInterface.addView(tlInterfacerow);
@@ -441,12 +393,12 @@ public class NWMonitorFragment extends ListFragment implements
 
 					TextView txtsnd = (TextView) row.findViewById(R.id.txtsnd);
 					float transMB;
-					transMB = (float) (trans / 1048576);
+					transMB = (float) (trans / 1024);
 					txtsnd.setText(Float.toString(transMB) + "KB");
 					trans = 0;
 					TextView txtrev = (TextView) row.findViewById(R.id.txtrev);
 					float recevMB;
-					recevMB = (float) (recev / 1048576);
+					recevMB = (float) (recev / 1024);
 					recev = 0;
 					txtrev.setText(Float.toString(recevMB) + "KB");
 
