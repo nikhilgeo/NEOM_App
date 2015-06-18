@@ -296,15 +296,18 @@ public class MonitorFragment extends ListFragment implements
 	}
 
 	private float[] getProcessMemInfo(int PID) {
-		ActivityManager activityManagerMEM = (ActivityManager) getActivity()
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		float[] memInfoModel = new float[3];
-		MemoryInfo mi[];// = new MemoryInfo();
+		float[] memInfoModel = { 0, 0, 0 };
 
-		mi = activityManagerMEM.getProcessMemoryInfo(new int[] { PID });
-		memInfoModel[0] = mi[0].getTotalPss() / 1000;// In KB
-		memInfoModel[1] = mi[0].getTotalPrivateDirty() / 1000;
-		memInfoModel[2] = mi[0].getTotalSharedDirty() / 1000;
+		if (Context.ACTIVITY_SERVICE != null) {
+			ActivityManager activityManagerMEM = (ActivityManager) getActivity()
+					.getSystemService(Context.ACTIVITY_SERVICE);
+			MemoryInfo mi[];// = new MemoryInfo();
+
+			mi = activityManagerMEM.getProcessMemoryInfo(new int[] { PID });
+			memInfoModel[0] = mi[0].getTotalPss() / 1000;// In KB
+			memInfoModel[1] = mi[0].getTotalPrivateDirty() / 1000;
+			memInfoModel[2] = mi[0].getTotalSharedDirty() / 1000;
+		}
 		return memInfoModel;
 
 	}

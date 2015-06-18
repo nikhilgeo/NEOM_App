@@ -60,6 +60,12 @@ public class MainActivity extends Activity implements
 					.commit();
 			mTitle = getString(R.string.title_section2);
 			break;
+		case 2:
+			fragmentManager.beginTransaction()
+					.replace(R.id.container, NWFilterFragment.newInstance())
+					.commit();
+			mTitle = getString(R.string.title_section3);
+			break;
 		default:
 			fragmentManager.beginTransaction()
 					.replace(R.id.container, MonitorFragment.newInstance())
@@ -69,7 +75,6 @@ public class MainActivity extends Activity implements
 
 	}
 
-	
 	public void restoreActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
