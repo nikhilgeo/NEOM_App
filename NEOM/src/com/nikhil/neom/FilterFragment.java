@@ -3,59 +3,48 @@ package com.nikhil.neom;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nikhil.neom.MonitorFragment.MyListAdapter;
-
 import android.app.Activity;
+import android.app.ListFragment;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.ListFragment;
+import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
- * A fragment representing a list of Items.
- * <p />
- * <p />
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
+ * A simple {@link Fragment} subclass. Activities that contain this fragment
+ * must implement the {@link FilterFragment.OnFragmentInteractionListener}
+ * interface to handle interaction events. Use the
+ * {@link FilterFragment#newInstance} factory method to create an instance of
+ * this fragment.
+ * 
  */
-public class NWFilterFragment extends ListFragment implements
-		OnItemClickListener {
+public class FilterFragment extends ListFragment {
 
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
 	public MyFilterListAdapter myFilterListAdapter;
-
 	private List<Model_Apps> filter_applist = new ArrayList<Model_Apps>();
-	private int abc;
 
-	//
-	// // TODO: Rename and change types of parameters
-	// private String mParam1;
-	// private String mParam2;
+	// ListView apps;
 
-	// TODO: Rename and change types of parameters
-	public static NWFilterFragment newInstance() {
-		NWFilterFragment fragment = new NWFilterFragment();
-		// Bundle args = new Bundle();
-		// args.putString(ARG_PARAM1, param1);
-		// args.putString(ARG_PARAM2, param2);
-		// fragment.setArguments(args);
+	public static FilterFragment newInstance() {
+		FilterFragment fragment = new FilterFragment();
 		return fragment;
 	}
 
@@ -63,34 +52,22 @@ public class NWFilterFragment extends ListFragment implements
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment (e.g. upon screen orientation changes).
 	 */
-	public NWFilterFragment() {
+	public FilterFragment() {
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//
-		// if (getArguments() != null) {
-		// // mParam1 = getArguments().getString(ARG_PARAM1);
-		// // mParam2 = getArguments().getString(ARG_PARAM2);
-		// }
 
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
+		super.onCreateView(inflater, container, savedInstanceState);
 		getAllInstalledApps();
-		View rootView = inflater.inflate(R.layout.frgament_nwfilter, container,
+		View rootView = inflater.inflate(R.layout.fragment_filter, container,
 				false);
-
-		// pidinodepname();
-
-		// pid_inode_pname();
-
-		// region monitoring : NG
-
 		return rootView;
 
 	}
@@ -99,27 +76,26 @@ public class NWFilterFragment extends ListFragment implements
 	public void onActivityCreated(Bundle savedInstanceState) {
 
 		super.onActivityCreated(savedInstanceState);
+
 		myFilterListAdapter = new MyFilterListAdapter(getActivity(),
 				R.layout.nwfilter_row, filter_applist);
 
-		getListView().setOnItemClickListener(this);
+		setListAdapter(myFilterListAdapter);
+
+		// apps = getListView();
+		// getListView().setOnItemClickListener(this);
+
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		// try {
-		// mListener = (OnFragmentInteractionListener) activity;
-		// } catch (ClassCastException e) {
-		// throw new ClassCastException(activity.toString()
-		// + " must implement OnFragmentInteractionListener");
-		// }
+
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		// mListener = null;
 	}
 
 	public interface OnFragmentInteractionListener {
@@ -127,13 +103,14 @@ public class NWFilterFragment extends ListFragment implements
 		public void onFragmentInteraction(Uri uri);
 	}
 
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT)
-				.show();
-
-	}
+	// @Override
+	// public void onItemClick(AdapterView<?> parent, View view, int position,
+	// long id) {
+	// // TODO Auto-generated method stub
+	// Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT)
+	// .show();
+	//
+	// }
 
 	/*
 	 * Custom Adapter to bind custom row layout Change the ArrayAdapter<T>
@@ -151,6 +128,7 @@ public class NWFilterFragment extends ListFragment implements
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			final int pos = position;
 			LayoutInflater inflater = (LayoutInflater) myContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View row = inflater.inflate(R.layout.nwfilter_row, parent, false);
@@ -170,31 +148,27 @@ public class NWFilterFragment extends ListFragment implements
 						.findViewById(R.id.app_paackage);
 				ImageView iconview = (ImageView) row
 						.findViewById(R.id.app_icon);
+				CheckBox checkbox = (CheckBox) row.findViewById(R.id.checkBox1);
 
 				appName.setText(appItem.appName);
-				packageName.setText(appItem.uid);
-				//iconview.setImageDrawable(appItem.icon);
+				packageName.setText("UID:" + appItem.uid.toString());
+				iconview.setImageDrawable(appItem.icon);
 
-				// TextView txtappname = (TextView) row
-				// .findViewById(R.id.txtappname);
-				// txtappname.setText(processItem.AppName);
-				// TextView txtpid = (TextView) row.findViewById(R.id.txtpid);
-				// txtpid.setText(Integer.toString(processItem.processID));
-				// TextView pname = (TextView) row.findViewById(R.id.txtpname);
-				// pname.setText(processItem.processName);
-				// TextView uid = (TextView) row.findViewById(R.id.txtuid);
-				// uid.setText(Integer.toString(processItem.userID));
-				// TextView txtpss = (TextView) row.findViewById(R.id.txtpss);
-				// txtpss.setText(Float.toString(processItem.memInfo[0]) +
-				// "MB");
-				// TextView txtpvtdirty = (TextView) row
-				// .findViewById(R.id.txtpvtdirty);
-				// txtpvtdirty.setText(Float.toString(processItem.memInfo[1])
-				// + "MB");
-				// TextView txtshrdirty = (TextView) row
-				// .findViewById(R.id.txtshrdirty);
-				// txtshrdirty.setText(Float.toString(processItem.memInfo[2])
-				// + "MB");
+				checkbox.setOnClickListener(new View.OnClickListener() {
+
+					public void onClick(View v) {
+						if (((CheckBox) v).isChecked())
+							Toast.makeText(getActivity(),
+									"Checked item " + Integer.toString(pos),
+									Toast.LENGTH_SHORT).show();
+						else
+							Toast.makeText(getActivity(),
+									"Uncecked item " + Integer.toString(pos),
+									Toast.LENGTH_SHORT).show();
+
+					}
+				});
+
 			}
 			return row;
 		}
@@ -207,15 +181,16 @@ public class NWFilterFragment extends ListFragment implements
 		// .queryIntentActivities(mainIntent, 0);
 
 		PackageManager pm = getActivity().getPackageManager();
-		List<ApplicationInfo> installedApps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+		List<ApplicationInfo> installedApps = pm
+				.getInstalledApplications(PackageManager.GET_META_DATA);
 		for (ApplicationInfo appInfo : installedApps) {
 			Model_Apps apps = new Model_Apps();
 			apps.appName = appInfo.loadLabel(pm).toString();
 			apps.uid = appInfo.uid;
-			//apps.icon = appInfo.loadIcon(pm);
+			apps.icon = appInfo.loadIcon(pm);
 			filter_applist.add(apps);
 		}
-		abc = filter_applist.size();
+
 	}
 
 }

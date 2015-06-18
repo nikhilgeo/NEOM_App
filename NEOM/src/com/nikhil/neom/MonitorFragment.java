@@ -297,8 +297,8 @@ public class MonitorFragment extends ListFragment implements
 
 	private float[] getProcessMemInfo(int PID) {
 		float[] memInfoModel = { 0, 0, 0 };
+		try {
 
-		if (Context.ACTIVITY_SERVICE != null) {
 			ActivityManager activityManagerMEM = (ActivityManager) getActivity()
 					.getSystemService(Context.ACTIVITY_SERVICE);
 			MemoryInfo mi[];// = new MemoryInfo();
@@ -307,6 +307,8 @@ public class MonitorFragment extends ListFragment implements
 			memInfoModel[0] = mi[0].getTotalPss() / 1000;// In KB
 			memInfoModel[1] = mi[0].getTotalPrivateDirty() / 1000;
 			memInfoModel[2] = mi[0].getTotalSharedDirty() / 1000;
+		} catch (Exception ex) {
+			Log.w("NEOM:", ex.toString(), ex);
 		}
 		return memInfoModel;
 

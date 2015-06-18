@@ -27,8 +27,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.nikhil.neom.MonitorFragment.MyListAdapter;
-
 /**
  * A fragment representing a list of Items.
  * <p />

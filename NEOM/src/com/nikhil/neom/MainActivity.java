@@ -62,7 +62,7 @@ public class MainActivity extends Activity implements
 			break;
 		case 2:
 			fragmentManager.beginTransaction()
-					.replace(R.id.container, NWFilterFragment.newInstance())
+					.replace(R.id.container, FilterFragment.newInstance())
 					.commit();
 			mTitle = getString(R.string.title_section3);
 			break;
