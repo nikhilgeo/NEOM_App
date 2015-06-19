@@ -65,7 +65,17 @@ public class FilterFragment extends ListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		getAllInstalledApps();
+		try {
+			// getAllInstalledApps();
+			ExecuteCMD executeCMD = new ExecuteCMD();
+			String cmd[] = { "iptables -L" };
+			String output;
+			output = executeCMD.RunAsRoot(cmd);
+			// Toast.makeText(getActivity(), "Output " + output,
+			// Toast.LENGTH_SHORT).show();
+		} catch (Exception ex) {
+			Log.w("NEOM:", ex.toString(), ex);
+		}
 		View rootView = inflater.inflate(R.layout.fragment_filter, container,
 				false);
 		return rootView;
@@ -179,16 +189,19 @@ public class FilterFragment extends ListFragment {
 		// mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 		// final List pkgAppsList = getActivity().getPackageManager()
 		// .queryIntentActivities(mainIntent, 0);
-
-		PackageManager pm = getActivity().getPackageManager();
-		List<ApplicationInfo> installedApps = pm
-				.getInstalledApplications(PackageManager.GET_META_DATA);
-		for (ApplicationInfo appInfo : installedApps) {
-			Model_Apps apps = new Model_Apps();
-			apps.appName = appInfo.loadLabel(pm).toString();
-			apps.uid = appInfo.uid;
-			apps.icon = appInfo.loadIcon(pm);
-			filter_applist.add(apps);
+		try {
+			PackageManager pm = getActivity().getPackageManager();
+			List<ApplicationInfo> installedApps = pm
+					.getInstalledApplications(PackageManager.GET_META_DATA);
+			for (ApplicationInfo appInfo : installedApps) {
+				Model_Apps apps = new Model_Apps();
+				apps.appName = appInfo.loadLabel(pm).toString();
+				apps.uid = appInfo.uid;
+				apps.icon = appInfo.loadIcon(pm);
+				filter_applist.add(apps);
+			}
+		} catch (Exception ex) {
+			Log.w("NEOM:", ex.toString(), ex);
 		}
 
 	}

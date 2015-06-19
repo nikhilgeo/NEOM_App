@@ -119,15 +119,16 @@ public class MonitorFragment extends ListFragment implements
 
 							// getAllPID();
 
-							List<Model_Process> processData = getJavaProcessPID();
+							if (getActivity() != null) {
+								List<Model_Process> processData = getJavaProcessPID();
 
-							Bundle mb = new Bundle();
-							mb.putSerializable("processKey",
-									(Serializable) processData);
-							Message mmsg = Message.obtain();
-							mmsg.setData(mb);
-							handler.sendMessage(mmsg);
-
+								Bundle mb = new Bundle();
+								mb.putSerializable("processKey",
+										(Serializable) processData);
+								Message mmsg = Message.obtain();
+								mmsg.setData(mb);
+								handler.sendMessage(mmsg);
+							}
 							Thread.sleep(1000);
 
 						}
@@ -298,15 +299,17 @@ public class MonitorFragment extends ListFragment implements
 	private float[] getProcessMemInfo(int PID) {
 		float[] memInfoModel = { 0, 0, 0 };
 		try {
+			if (getActivity() != null) {
+				ActivityManager activityManagerMEM = (ActivityManager) getActivity()
+						.getSystemService(getActivity().ACTIVITY_SERVICE);// or
+																			// Context
+				MemoryInfo mi[];// = new MemoryInfo();
 
-			ActivityManager activityManagerMEM = (ActivityManager) getActivity()
-					.getSystemService(Context.ACTIVITY_SERVICE);
-			MemoryInfo mi[];// = new MemoryInfo();
-
-			mi = activityManagerMEM.getProcessMemoryInfo(new int[] { PID });
-			memInfoModel[0] = mi[0].getTotalPss() / 1000;// In KB
-			memInfoModel[1] = mi[0].getTotalPrivateDirty() / 1000;
-			memInfoModel[2] = mi[0].getTotalSharedDirty() / 1000;
+				mi = activityManagerMEM.getProcessMemoryInfo(new int[] { PID });
+				memInfoModel[0] = mi[0].getTotalPss() / 1000;// In KB
+				memInfoModel[1] = mi[0].getTotalPrivateDirty() / 1000;
+				memInfoModel[2] = mi[0].getTotalSharedDirty() / 1000;
+			}
 		} catch (Exception ex) {
 			Log.w("NEOM:", ex.toString(), ex);
 		}
