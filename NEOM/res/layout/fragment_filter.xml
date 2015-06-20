@@ -25,10 +25,11 @@
         android:text="Loding Apps..." />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/updateButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:onClick="update_iptable_Rules"
         android:text="Block Apps" />
 
 </FrameLayout>
