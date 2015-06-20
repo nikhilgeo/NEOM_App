@@ -15,18 +15,14 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * A simple {@link Fragment} subclass. Activities that contain this fragment
@@ -65,12 +61,13 @@ public class FilterFragment extends ListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
+
 		try {
-			// getAllInstalledApps();
+			getAllInstalledApps();
 			ExecuteCMD executeCMD = new ExecuteCMD();
-			String cmd[] = { "iptables -L" };
-			String output;
-			output = executeCMD.RunAsRoot(cmd);
+			// String cmd[] = { "iptables -L" };
+			// String output;
+			// output = executeCMD.RunAsRoot(cmd);
 			// Toast.makeText(getActivity(), "Output " + output,
 			// Toast.LENGTH_SHORT).show();
 		} catch (Exception ex) {
@@ -78,6 +75,14 @@ public class FilterFragment extends ListFragment {
 		}
 		View rootView = inflater.inflate(R.layout.fragment_filter, container,
 				false);
+		Button updateButton = (Button) rootView.findViewById(R.id.updateButton);
+		updateButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(getActivity(), "BUtton clicked",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
 		return rootView;
 
 	}
@@ -91,9 +96,6 @@ public class FilterFragment extends ListFragment {
 				R.layout.nwfilter_row, filter_applist);
 
 		setListAdapter(myFilterListAdapter);
-
-		// apps = getListView();
-		// getListView().setOnItemClickListener(this);
 
 	}
 
