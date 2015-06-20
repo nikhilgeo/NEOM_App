@@ -3,6 +3,7 @@ package com.nikhil.neom;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.net.Uri;
@@ -34,8 +35,15 @@ import android.widget.Toast;
  */
 public class FilterFragment extends ListFragment {
 
+	// class Blocked {
+	// String appName;
+	// String uid;
+	//
+	// }
+
 	public MyFilterListAdapter myFilterListAdapter;
 	private List<Model_Apps> filter_applist = new ArrayList<Model_Apps>();
+	private List<Integer> blocked_uid = new ArrayList<Integer>();
 
 	// ListView apps;
 
@@ -79,8 +87,20 @@ public class FilterFragment extends ListFragment {
 		updateButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				if(blocked_uid !=null && blocked_uid.size()!=0)
+				{
+				String rules[];
+				for(int uid:blocked_uid)
+				{
+					
+				}
+				
+				
+				
+				
 				Toast.makeText(getActivity(), "BUtton clicked",
 						Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 		return rootView;
@@ -153,7 +173,7 @@ public class FilterFragment extends ListFragment {
 			}
 
 			if (filter_applist != null) {
-				Model_Apps appItem = filter_applist.get(position);
+				final Model_Apps appItem = filter_applist.get(position);
 
 				TextView appName = (TextView) row.findViewById(R.id.app_name);
 				TextView packageName = (TextView) row
@@ -169,14 +189,17 @@ public class FilterFragment extends ListFragment {
 				checkbox.setOnClickListener(new View.OnClickListener() {
 
 					public void onClick(View v) {
-						if (((CheckBox) v).isChecked())
+						if (((CheckBox) v).isChecked()) {
+							blocked_uid.add(appItem.uid);
 							Toast.makeText(getActivity(),
 									"Checked item " + Integer.toString(pos),
 									Toast.LENGTH_SHORT).show();
-						else
+						} else {
+							blocked_uid.remove(appItem.uid);
 							Toast.makeText(getActivity(),
 									"Uncecked item " + Integer.toString(pos),
 									Toast.LENGTH_SHORT).show();
+						}
 
 					}
 				});
