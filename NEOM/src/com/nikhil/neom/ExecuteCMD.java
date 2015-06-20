@@ -32,11 +32,11 @@ public class ExecuteCMD {
 
 			while ((read_line = stdInput.readLine()) != null) {
 
-				cmdOutput = read_line + "\n";
+				cmdOutput = cmdOutput + read_line + "\n";
 			}
 
 		} catch (Exception e) {
-			Log.i("NEOM in getPID", e.getMessage());
+			Log.i("NEOM:", e.getMessage());
 			cmdOutput = "Error";
 		}
 		return cmdOutput;
