@@ -3,6 +3,9 @@ This is an app developed as part of the M.Tech main project at TIFAC CORE in Cyb
 
 Main Functionalities:-
 Realtime process monitoring
+
 Realtime network monitoring.
+
 Context based Network traffic filtering via iptables
+
 Querying past network conections details.
