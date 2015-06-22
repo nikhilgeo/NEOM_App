@@ -20,8 +20,7 @@ public class ExecuteCMD {
 		try {
 			Process suProcess = Runtime.getRuntime().exec("su");
 			DataOutputStream os = new DataOutputStream(
-					suProcess.getOutputStream());
-
+					suProcess.getOutputStream()); //os connected to input stream of su
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
 					suProcess.getInputStream()));
 			for (String tmpCmd : cmds) {
