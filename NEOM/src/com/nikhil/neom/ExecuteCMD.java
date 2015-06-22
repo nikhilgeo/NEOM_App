@@ -18,14 +18,15 @@ public class ExecuteCMD {
 		String cmdOutput = null;
 		String read_line = null;
 		try {
-			// String[] cmds = { "ls /data" };
-			Process p = Runtime.getRuntime().exec("su");
-			DataOutputStream os = new DataOutputStream(p.getOutputStream());
+			Process suProcess = Runtime.getRuntime().exec("su");
+			DataOutputStream os = new DataOutputStream(
+					suProcess.getOutputStream());
 
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
+					suProcess.getInputStream()));
 			for (String tmpCmd : cmds) {
-				os.writeBytes(tmpCmd + "\n");
+				if (tmpCmd != null)
+					os.writeBytes(tmpCmd + "\n");
 			}
 			os.writeBytes("exit\n");
 			os.flush();
