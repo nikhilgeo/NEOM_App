@@ -87,19 +87,27 @@ public class FilterFragment extends ListFragment {
 		updateButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if(blocked_uid !=null && blocked_uid.size()!=0)
-				{
-				String rules[];
-				for(int uid:blocked_uid)
-				{
-					
-				}
-				
-				
-				
-				
-				Toast.makeText(getActivity(), "BUtton clicked",
-						Toast.LENGTH_SHORT).show();
+				if (blocked_uid != null && blocked_uid.size() != 0) {
+					ArrayList<String> block_rules_arlist = new ArrayList<String>();
+					for (int uid : blocked_uid) {
+
+						block_rules_arlist
+								.add("iptables -A OUTPUT -m owner --uid-owner "
+										+ Integer.toString(uid) + " -j DROP");
+
+						// pass to root execution
+						// del all existing rules
+						// apply new rules
+						// return back verification
+						// If sucess show a sucess msg
+					}
+					String block_rules_ar[] = block_rules_arlist
+							.toArray(new String[block_rules_arlist.size()]);
+					ExecuteCMD executeCMD = new ExecuteCMD();
+					executeCMD.RunAsRoot(block_rules_ar);
+
+					Toast.makeText(getActivity(), "Button clicked",
+							Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
