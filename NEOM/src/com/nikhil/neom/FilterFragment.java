@@ -3,15 +3,19 @@ package com.nikhil.neom;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nikhil.neom.iptablesDBContract.iptblrule;
+
 import android.R.integer;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,6 +48,7 @@ public class FilterFragment extends ListFragment {
 	public MyFilterListAdapter myFilterListAdapter;
 	private List<Model_Apps> filter_applist = new ArrayList<Model_Apps>();
 	private List<Integer> blocked_uid = new ArrayList<Integer>();
+	private Boolean dbWriteStat = true;
 
 	// ListView apps;
 
@@ -69,7 +74,6 @@ public class FilterFragment extends ListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-
 		try {
 			getAllInstalledApps();
 			ExecuteCMD executeCMD = new ExecuteCMD();
@@ -91,18 +95,20 @@ public class FilterFragment extends ListFragment {
 					ArrayList<String> block_rules_arlist = new ArrayList<String>();
 					for (int uid : blocked_uid) {
 
-						block_rules_arlist
-								.add("iptables -A OUTPUT -m owner --uid-owner "
-										+ Integer.toString(uid) + " -j DROP");
+						String rule = "iptables -A OUTPUT -m owner --uid-owner "
+								+ Integer.toString(uid) + " -j DROP";
+						block_rules_arlist.add(rule);
+						long newRowID = writeRulestoDB(uid, rule);
 
-						// pass to root execution
 						// del all existing rules
 						// apply new rules
 						// return back verification
 						// If sucess show a sucess msg
 					}
+
 					String block_rules_ar[] = block_rules_arlist
 							.toArray(new String[block_rules_arlist.size()]);
+
 					ExecuteCMD executeCMD = new ExecuteCMD();
 					executeCMD.RunAsRoot(block_rules_ar);
 
@@ -239,4 +245,20 @@ public class FilterFragment extends ListFragment {
 
 	}
 
+	long writeRulestoDB(int uid, String rule) {
+
+		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
+		// Gets the data repository in write mode
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+		// Create a new map of values, where column names are the keys
+		ContentValues values = new ContentValues();
+		values.put(iptblrule.COLUMN_NAME_UID, uid);
+		values.put(iptblrule.COLUMN_NAME_RULE, rule);
+
+		long newRowId;
+		newRowId = db.insert(iptblrule.TABLE_NAME, null, values);
+		return newRowId;
+
+	}
 }
