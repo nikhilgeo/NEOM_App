@@ -15,6 +15,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.util.Log;
@@ -91,6 +92,9 @@ public class FilterFragment extends ListFragment {
 		updateButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+
+				// Clear all current rules from DB
+				flushRules();
 				if (blocked_uid != null && blocked_uid.size() != 0) {
 					ArrayList<String> block_rules_arlist = new ArrayList<String>();
 					for (int uid : blocked_uid) {
@@ -116,6 +120,7 @@ public class FilterFragment extends ListFragment {
 							Toast.LENGTH_SHORT).show();
 				}
 			}
+
 		});
 		return rootView;
 
@@ -259,6 +264,57 @@ public class FilterFragment extends ListFragment {
 		long newRowId;
 		newRowId = db.insert(iptblrule.TABLE_NAME, null, values);
 		return newRowId;
+
+	}
+
+	private void flushRules() {
+		// TODO Auto-generated method stub
+
+		// Get all uid of past blocked apps.
+		ExecuteCMD executeCMD = new ExecuteCMD();
+		List<String> uidinDBLst = getAllRulesFrmDB();
+		ArrayList<String> del_rules_arlist = new ArrayList<String>();
+		//Create delete iptable rules
+		for (String blkuid : uidinDBLst) {
+			String rule = "iptables -D OUTPUT -m owner --uid-owner " + blkuid
+					+ " -j DROP";
+			del_rules_arlist.add(rule);
+		}
+		
+		String del_rules[] = del_rules_arlist
+				.toArray(new String[del_rules_arlist.size()]);
+
+		//Delete all existing rules from iptables
+		executeCMD.RunAsRoot(del_rules);
+		
+		//Delete all existing rules from Database
+		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
+		SQLiteDatabase db = mDbHelper.getWritableDatabase();
+		db.execSQL("delete from" + iptblrule.TABLE_NAME);
+
+	}
+
+	private List<String> getAllRulesFrmDB() {
+		List<String> uidLst = new ArrayList<String>();
+		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
+		SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+		// Define a projection that specifies which columns from the database
+		// you will actually use after this query.
+		String[] projection = { iptblrule.COLUMN_NAME_UID };
+		Cursor cursor = db.query(iptblrule.TABLE_NAME, // The table to query
+				projection, // The columns to return
+				null, // The columns for the WHERE clause
+				null,// The sort order
+				null, null, null);
+		cursor.moveToFirst();
+		do {
+			String uid = cursor.getString(cursor
+					.getColumnIndexOrThrow(iptblrule.COLUMN_NAME_UID));
+			uidLst.add(uid);
+		} while (cursor.moveToNext());
+
+		return uidLst;
 
 	}
 }
