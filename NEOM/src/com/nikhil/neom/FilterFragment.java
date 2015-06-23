@@ -274,23 +274,23 @@ public class FilterFragment extends ListFragment {
 		ExecuteCMD executeCMD = new ExecuteCMD();
 		List<String> uidinDBLst = getAllRulesFrmDB();
 		ArrayList<String> del_rules_arlist = new ArrayList<String>();
-		//Create delete iptable rules
+		// Create delete iptable rules
 		for (String blkuid : uidinDBLst) {
 			String rule = "iptables -D OUTPUT -m owner --uid-owner " + blkuid
 					+ " -j DROP";
 			del_rules_arlist.add(rule);
 		}
-		
+
 		String del_rules[] = del_rules_arlist
 				.toArray(new String[del_rules_arlist.size()]);
 
-		//Delete all existing rules from iptables
+		// Delete all existing rules from iptables
 		executeCMD.RunAsRoot(del_rules);
-		
-		//Delete all existing rules from Database
+
+		// Delete all existing rules from Database
 		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
-		db.execSQL("delete from" + iptblrule.TABLE_NAME);
+		db.execSQL("delete from " + iptblrule.TABLE_NAME);
 
 	}
 
@@ -307,13 +307,13 @@ public class FilterFragment extends ListFragment {
 				null, // The columns for the WHERE clause
 				null,// The sort order
 				null, null, null);
-		cursor.moveToFirst();
-		do {
-			String uid = cursor.getString(cursor
-					.getColumnIndexOrThrow(iptblrule.COLUMN_NAME_UID));
-			uidLst.add(uid);
-		} while (cursor.moveToNext());
-
+		if (cursor.moveToFirst()) {
+			do {
+				String uid = cursor.getString(cursor
+						.getColumnIndexOrThrow(iptblrule.COLUMN_NAME_UID));
+				uidLst.add(uid);
+			} while (cursor.moveToNext());
+		}
 		return uidLst;
 
 	}

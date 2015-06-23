@@ -15,7 +15,7 @@ public class neomDbHelper extends SQLiteOpenHelper {
 	private static final String COMMA_SEP = ",";
 	private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
 			+ iptblrule.TABLE_NAME + " (" + iptblrule._ID
-			+ " INTEGER PRIMARY KEY," + COMMA_SEP + iptblrule.COLUMN_NAME_UID + TEXT_TYPE
+			+ " INTEGER PRIMARY KEY" + COMMA_SEP + iptblrule.COLUMN_NAME_UID + TEXT_TYPE
 			+ COMMA_SEP + iptblrule.COLUMN_NAME_RULE + TEXT_TYPE + " )";
 
 	private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
