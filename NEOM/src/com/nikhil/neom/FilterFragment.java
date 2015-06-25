@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nikhil.neom.iptablesDBContract.iptblrule;
+import com.nikhil.neom.iptablesDBContract.iptblruleSSID;
 
 import android.R.integer;
 import android.app.Activity;
@@ -40,11 +41,7 @@ import android.widget.Toast;
  */
 public class FilterFragment extends ListFragment {
 
-	// class Blocked {
-	// String appName;
-	// String uid;
-	//
-	// }
+	static String wifiSSID = null;
 
 	public MyFilterListAdapter myFilterListAdapter;
 	private List<Model_Apps> filter_applist = new ArrayList<Model_Apps>();
@@ -53,8 +50,9 @@ public class FilterFragment extends ListFragment {
 
 	// ListView apps;
 
-	public static FilterFragment newInstance() {
+	public static FilterFragment newInstance(String SSID) {
 		FilterFragment fragment = new FilterFragment();
+		wifiSSID = SSID;
 		return fragment;
 	}
 
@@ -154,15 +152,6 @@ public class FilterFragment extends ListFragment {
 		public void onFragmentInteraction(Uri uri);
 	}
 
-	// @Override
-	// public void onItemClick(AdapterView<?> parent, View view, int position,
-	// long id) {
-	// // TODO Auto-generated method stub
-	// Toast.makeText(getActivity(), "Item: " + position, Toast.LENGTH_SHORT)
-	// .show();
-	//
-	// }
-
 	/*
 	 * Custom Adapter to bind custom row layout Change the ArrayAdapter<T>
 	 * according to the type you want to populate the row
@@ -255,11 +244,20 @@ public class FilterFragment extends ListFragment {
 		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
 		// Gets the data repository in write mode
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-		// Create a new map of values, where column names are the keys
 		ContentValues values = new ContentValues();
-		values.put(iptblrule.COLUMN_NAME_UID, uid);
-		values.put(iptblrule.COLUMN_NAME_RULE, rule);
+
+		if (wifiSSID != null) // Set the WiFi context based rules to DB
+		{
+			// Create a new map of values, where column names are the keys
+			values.put(iptblruleSSID.COLUMN_NAME_UID, uid);
+			values.put(iptblruleSSID.COLUMN_NAME_RULE, rule);
+			values.put(iptblruleSSID.COLUMN_NAME_SSID, wifiSSID);
+		} else { // Set the manual black based rules to DB
+
+			// Create a new map of values, where column names are the keys
+			values.put(iptblrule.COLUMN_NAME_UID, uid);
+			values.put(iptblrule.COLUMN_NAME_RULE, rule);
+		}
 
 		long newRowId;
 		newRowId = db.insert(iptblrule.TABLE_NAME, null, values);
