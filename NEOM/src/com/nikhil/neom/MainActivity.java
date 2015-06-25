@@ -1,10 +1,10 @@
 package com.nikhil.neom;
 
 import android.app.Activity;
-
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,8 +61,9 @@ public class MainActivity extends Activity implements
 			mTitle = getString(R.string.title_section2);
 			break;
 		case 2:
-			fragmentManager.beginTransaction()
-					.replace(R.id.container, FilterFragment.newInstance())
+			fragmentManager
+					.beginTransaction()
+					.replace(R.id.container, Filter_home_Fragment.newInstance())
 					.commit();
 			mTitle = getString(R.string.title_section3);
 			break;
