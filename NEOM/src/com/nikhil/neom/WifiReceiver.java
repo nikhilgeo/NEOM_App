@@ -34,8 +34,9 @@ public class WifiReceiver extends BroadcastReceiver {
 			}
 			if (!info.isConnected()) {
 				// When ever disconnected remove the applied WiFi
-				// context----Save some flag in DB to knw if rules are on--remove rules only if they are applied.
-				
+				// context----Save some flag in DB to knw if rules are
+				// on--remove rules only if they are applied.
+
 				Toast.makeText(context, "Disconnected from WiFi " + ssid,
 						Toast.LENGTH_SHORT).show();
 			}
