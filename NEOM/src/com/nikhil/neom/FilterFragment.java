@@ -86,6 +86,11 @@ public class FilterFragment extends ListFragment {
 		}
 		View rootView = inflater.inflate(R.layout.fragment_filter, container,
 				false);
+		if (wifiSSID != null) {
+			TextView txtHeader = (TextView) rootView
+					.findViewById(R.id.txtHeader);
+			txtHeader.setText("Select to block on WiFi '" + wifiSSID +"'");
+		}
 		Button updateButton = (Button) rootView.findViewById(R.id.updateButton);
 		updateButton.setOnClickListener(new OnClickListener() {
 			@Override
