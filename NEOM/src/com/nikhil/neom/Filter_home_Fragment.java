@@ -68,7 +68,7 @@ public class Filter_home_Fragment extends Fragment {
 				fragmentManager
 						.beginTransaction()
 						.replace(R.id.container,
-								FilterFragment.newInstance(false))
+								FilterFragment.newInstance(null))
 						.addToBackStack("FrmFilter").commit();
 			}
 		});
@@ -81,7 +81,7 @@ public class Filter_home_Fragment extends Fragment {
 				fragmentManager
 						.beginTransaction()
 						.replace(R.id.container,
-								FilterFragment.newInstance(true))
+								SetContextFragment.newInstance())
 						.addToBackStack("Frm2Filter").commit();
 
 				Toast.makeText(getActivity(), "Context button clicked",
