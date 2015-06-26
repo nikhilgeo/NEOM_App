@@ -89,7 +89,7 @@ public class FilterFragment extends ListFragment {
 		if (wifiSSID != null) {
 			TextView txtHeader = (TextView) rootView
 					.findViewById(R.id.txtHeader);
-			txtHeader.setText("Select to block on WiFi '" + wifiSSID +"'");
+			txtHeader.setText("Select to block on WiFi '" + wifiSSID + "'");
 		}
 		Button updateButton = (Button) rootView.findViewById(R.id.updateButton);
 		updateButton.setOnClickListener(new OnClickListener() {
@@ -107,10 +107,7 @@ public class FilterFragment extends ListFragment {
 						block_rules_arlist.add(rule);
 						long newRowID = writeRulestoDB(uid, rule);
 
-						// del all existing rules
-						// apply new rules
-						// return back verification
-						// If sucess show a sucess msg
+						
 					}
 
 					String block_rules_ar[] = block_rules_arlist
@@ -119,7 +116,10 @@ public class FilterFragment extends ListFragment {
 					ExecuteCMD executeCMD = new ExecuteCMD();
 					executeCMD.RunAsRoot(block_rules_ar);
 
-					Toast.makeText(getActivity(), "Button clicked",
+					Toast.makeText(
+							getActivity(),
+							Integer.toString(blocked_uid.size())
+									+ "new rules added",
 							Toast.LENGTH_SHORT).show();
 				}
 			}
@@ -173,6 +173,8 @@ public class FilterFragment extends ListFragment {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			List<String> blockedUid = new ArrayList<String>();
+
 			final int pos = position;
 			LayoutInflater inflater = (LayoutInflater) myContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -186,6 +188,7 @@ public class FilterFragment extends ListFragment {
 			}
 
 			if (filter_applist != null) {
+				blockedUid = getAllRulesFrmDB();
 				final Model_Apps appItem = filter_applist.get(position);
 
 				TextView appName = (TextView) row.findViewById(R.id.app_name);
@@ -198,6 +201,10 @@ public class FilterFragment extends ListFragment {
 				appName.setText(appItem.appName);
 				packageName.setText("UID:" + appItem.uid.toString());
 				iconview.setImageDrawable(appItem.icon);
+
+				if (blockedUid.contains(appItem.uid.toString())) {
+					checkbox.setChecked(true);
+				}
 
 				checkbox.setOnClickListener(new View.OnClickListener() {
 
@@ -294,6 +301,10 @@ public class FilterFragment extends ListFragment {
 		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		db.execSQL("delete from " + iptblrule.TABLE_NAME);
+		Toast.makeText(
+				getActivity(),
+				"Existing " + Integer.toString(uidinDBLst.size())
+						+ " rules deleted", Toast.LENGTH_SHORT).show();
 
 	}
 
