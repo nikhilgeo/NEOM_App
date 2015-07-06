@@ -1,6 +1,8 @@
 package com.nikhil.neom;
 
 import com.nikhil.neom.iptablesDBContract.iptblrule;
+import com.nikhil.neom.iptablesDBContract.iptblruleSSID;
+import com.nikhil.neom.iptablesDBContract.ssidInfo;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,13 +15,36 @@ public class neomDbHelper extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "neom.db";
 	private static final String TEXT_TYPE = " TEXT";
 	private static final String COMMA_SEP = ",";
-	private static final String SQL_CREATE_ENTRIES = "CREATE TABLE "
+	private static final String SQL_CREATE_ENTRIES_iptblrule = "CREATE TABLE "
 			+ iptblrule.TABLE_NAME + " (" + iptblrule._ID
-			+ " INTEGER PRIMARY KEY" + COMMA_SEP + iptblrule.COLUMN_NAME_UID + TEXT_TYPE
-			+ COMMA_SEP + iptblrule.COLUMN_NAME_RULE + TEXT_TYPE + " )";
+			+ " INTEGER PRIMARY KEY" + COMMA_SEP + iptblrule.COLUMN_NAME_UID
+			+ TEXT_TYPE + COMMA_SEP + iptblrule.COLUMN_NAME_RULE + TEXT_TYPE
+			+ " )";
+	private static final String SQL_CREATE_ENTRIES_iptblruleSSID = "CREATE TABLE "
+			+ iptblruleSSID.TABLE_NAME
+			+ " ("
+			+ iptblruleSSID._ID
+			+ " INTEGER PRIMARY KEY"
+			+ COMMA_SEP
+			+ iptblruleSSID.COLUMN_NAME_UID
+			+ TEXT_TYPE
+			+ COMMA_SEP
+			+ iptblruleSSID.COLUMN_NAME_RULE
+			+ TEXT_TYPE
+			+ COMMA_SEP
+			+ iptblruleSSID.COLUMN_NAME_SSID + TEXT_TYPE + " )";
+	private static final String SQL_CREATE_ENTRIES_ssidInfo = "CREATE TABLE "
+			+ ssidInfo.TABLE_NAME + " (" + ssidInfo._ID
+			+ " INTEGER PRIMARY KEY" + COMMA_SEP + ssidInfo.COLUMN_NAME_SSID
+			+ TEXT_TYPE + COMMA_SEP + ssidInfo.COLUMN_NAME_ACTIVE + TEXT_TYPE
+			+ " )";
 
-	private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
+	private static final String SQL_DELETE_ENTRIES_iptblrule = "DROP TABLE IF EXISTS "
 			+ iptblrule.TABLE_NAME;
+	private static final String SQL_DELETE_ENTRIES_iptblruleSSID = "DROP TABLE IF EXISTS "
+			+ iptblruleSSID.TABLE_NAME;
+	private static final String SQL_DELETE_ENTRIES_ssidInfo = "DROP TABLE IF EXISTS "
+			+ ssidInfo.TABLE_NAME;
 
 	public neomDbHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -28,7 +53,9 @@ public class neomDbHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		db.execSQL(SQL_CREATE_ENTRIES);
+		db.execSQL(SQL_CREATE_ENTRIES_iptblrule);
+		db.execSQL(SQL_CREATE_ENTRIES_iptblruleSSID);
+		db.execSQL(SQL_CREATE_ENTRIES_ssidInfo);
 
 	}
 
@@ -37,7 +64,9 @@ public class neomDbHelper extends SQLiteOpenHelper {
 		// This database is only a cache for online data, so its upgrade policy
 		// is
 		// to simply to discard the data and start over
-		db.execSQL(SQL_DELETE_ENTRIES);
+		db.execSQL(SQL_DELETE_ENTRIES_iptblrule);
+		db.execSQL(SQL_DELETE_ENTRIES_iptblruleSSID);
+		db.execSQL(SQL_DELETE_ENTRIES_ssidInfo);
 		onCreate(db);
 	}
 
