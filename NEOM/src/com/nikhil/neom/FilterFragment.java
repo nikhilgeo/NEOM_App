@@ -121,13 +121,12 @@ public class FilterFragment extends ListFragment {
 								Integer.toString(blocked_uid.size())
 										+ "new rules added", Toast.LENGTH_SHORT)
 								.show();
-					} else
-					{
+					} else {
 						Toast.makeText(
 								getActivity(),
 								Integer.toString(blocked_uid.size())
-										+ "new rules added to" + wifiSSID + "Context", Toast.LENGTH_SHORT)
-								.show();
+										+ "new rules added to" + wifiSSID
+										+ "Context", Toast.LENGTH_SHORT).show();
 					}
 
 				}
@@ -319,6 +318,50 @@ public class FilterFragment extends ListFragment {
 
 	private List<String> getAllRulesFrmDB() {
 		List<String> uidLst = new ArrayList<String>();
+		List<String> uidLstNoSSIDtmp = new ArrayList<String>();
+
+		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
+		SQLiteDatabase db = mDbHelper.getReadableDatabase();
+
+		// Define a projection that specifies which columns from the database
+		// you will actually use after this query.
+		String[] projection = { iptblrule.COLUMN_NAME_UID };
+		uidLstNoSSIDtmp = getAllRulesFrmDBWithOutSSID();
+
+		if (wifiSSID != null) {
+
+			String whereClause = iptblruleSSID.COLUMN_NAME_SSID + "="
+					+ wifiSSID;
+			Cursor cursor = db.query(iptblruleSSID.TABLE_NAME, // The table to
+					// // query
+					projection, // The columns to return
+					whereClause, // The columns for the WHERE clause
+					null,// The sort order
+					null, null, null);
+			if (cursor.moveToFirst()) {
+				do {
+					String uid = cursor
+							.getString(cursor
+									.getColumnIndexOrThrow(iptblruleSSID.COLUMN_NAME_UID));
+					if (uidLstNoSSIDtmp.contains(uid)) // Then uid in manual
+														// black list don't
+														// remove
+						continue;
+					uidLst.add(uid);
+				} while (cursor.moveToNext());
+			}
+		}
+
+		else {
+			uidLst = uidLstNoSSIDtmp;
+		}
+
+		return uidLst;
+
+	}
+
+	private List<String> getAllRulesFrmDBWithOutSSID() {
+		List<String> uidLstNoSSID = new ArrayList<String>();
 		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
 		SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
@@ -334,10 +377,10 @@ public class FilterFragment extends ListFragment {
 			do {
 				String uid = cursor.getString(cursor
 						.getColumnIndexOrThrow(iptblrule.COLUMN_NAME_UID));
-				uidLst.add(uid);
+				uidLstNoSSID.add(uid);
 			} while (cursor.moveToNext());
 		}
-		return uidLst;
-
+		return uidLstNoSSID;
 	}
+
 }
