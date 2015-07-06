@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.nikhil.neom.iptablesDBContract.iptblrule;
 import com.nikhil.neom.iptablesDBContract.iptblruleSSID;
+import com.nikhil.neom.iptablesDBContract.ssidInfo;
 
 import android.R.integer;
 import android.app.Activity;
@@ -265,6 +266,7 @@ public class FilterFragment extends ListFragment {
 		// Gets the data repository in write mode
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		ContentValues values = new ContentValues();
+		long newRowId;
 
 		if (wifiSSID != null) // Set the WiFi context based rules to DB
 		{
@@ -272,15 +274,22 @@ public class FilterFragment extends ListFragment {
 			values.put(iptblruleSSID.COLUMN_NAME_UID, uid);
 			values.put(iptblruleSSID.COLUMN_NAME_RULE, rule);
 			values.put(iptblruleSSID.COLUMN_NAME_SSID, wifiSSID);
+			newRowId = db.insert(iptblruleSSID.TABLE_NAME, null, values);
+
+			ContentValues values4SSID = new ContentValues();
+			values4SSID.put(ssidInfo.COLUMN_NAME_SSID, wifiSSID);
+			values4SSID.put(ssidInfo.COLUMN_NAME_ACTIVE, "N");
+			newRowId = db.insert(ssidInfo.TABLE_NAME, null, values4SSID);
+
 		} else { // Set the manual black based rules to DB
 
 			// Create a new map of values, where column names are the keys
 			values.put(iptblrule.COLUMN_NAME_UID, uid);
 			values.put(iptblrule.COLUMN_NAME_RULE, rule);
+			newRowId = db.insert(iptblrule.TABLE_NAME, null, values);
+
 		}
 
-		long newRowId;
-		newRowId = db.insert(iptblrule.TABLE_NAME, null, values);
 		return newRowId;
 
 	}
