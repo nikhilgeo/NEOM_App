@@ -107,20 +107,29 @@ public class FilterFragment extends ListFragment {
 						block_rules_arlist.add(rule);
 						long newRowID = writeRulestoDB(uid, rule);
 
-						
 					}
 
-					String block_rules_ar[] = block_rules_arlist
-							.toArray(new String[block_rules_arlist.size()]);
+					if (wifiSSID != null) {
+						String block_rules_ar[] = block_rules_arlist
+								.toArray(new String[block_rules_arlist.size()]);
 
-					ExecuteCMD executeCMD = new ExecuteCMD();
-					executeCMD.RunAsRoot(block_rules_ar);
+						ExecuteCMD executeCMD = new ExecuteCMD();
+						executeCMD.RunAsRoot(block_rules_ar);
 
-					Toast.makeText(
-							getActivity(),
-							Integer.toString(blocked_uid.size())
-									+ "new rules added",
-							Toast.LENGTH_SHORT).show();
+						Toast.makeText(
+								getActivity(),
+								Integer.toString(blocked_uid.size())
+										+ "new rules added", Toast.LENGTH_SHORT)
+								.show();
+					} else
+					{
+						Toast.makeText(
+								getActivity(),
+								Integer.toString(blocked_uid.size())
+										+ "new rules added to" + wifiSSID + "Context", Toast.LENGTH_SHORT)
+								.show();
+					}
+
 				}
 			}
 

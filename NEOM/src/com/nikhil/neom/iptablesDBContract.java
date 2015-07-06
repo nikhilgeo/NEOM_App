@@ -22,5 +22,10 @@ public class iptablesDBContract {
 		public static final String COLUMN_NAME_RULE = "rule";
 		public static final String COLUMN_NAME_SSID = "ssid";
 	}
-
+	/* Inner class that defines the table contents */
+	public static abstract class ssidInfo implements BaseColumns {
+		public static final String TABLE_NAME = "ssidInfo";
+		public static final String COLUMN_NAME_SSID = "ssid";
+		public static final String COLUMN_NAME_ACTIVE = "active";
+	}
 }
