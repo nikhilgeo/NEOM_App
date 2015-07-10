@@ -109,8 +109,26 @@ public class FilterFragment extends ListFragment {
 						long newRowID = writeRulestoDB(uid, rule);
 
 					}
-
 					if (wifiSSID != null) {
+
+						neomDbHelper mDbHelper = new neomDbHelper(getActivity());
+						// Gets the data repository in write mode
+						SQLiteDatabase db = mDbHelper.getWritableDatabase();
+						ContentValues values = new ContentValues();
+						long newRowId;
+						ContentValues values4SSID = new ContentValues();
+						values4SSID.put(ssidInfo.COLUMN_NAME_SSID, wifiSSID);
+						values4SSID.put(ssidInfo.COLUMN_NAME_ACTIVE, "N");
+						newRowId = db.insert(ssidInfo.TABLE_NAME, null,
+								values4SSID);
+						Toast.makeText(
+								getActivity(),
+								Integer.toString(blocked_uid.size())
+										+ "new rules added to" + wifiSSID
+										+ "Context", Toast.LENGTH_SHORT).show();
+					}
+
+					if (wifiSSID == null) {
 						String block_rules_ar[] = block_rules_arlist
 								.toArray(new String[block_rules_arlist.size()]);
 
@@ -122,12 +140,6 @@ public class FilterFragment extends ListFragment {
 								Integer.toString(blocked_uid.size())
 										+ "new rules added", Toast.LENGTH_SHORT)
 								.show();
-					} else {
-						Toast.makeText(
-								getActivity(),
-								Integer.toString(blocked_uid.size())
-										+ "new rules added to" + wifiSSID
-										+ "Context", Toast.LENGTH_SHORT).show();
 					}
 
 				}
@@ -276,11 +288,6 @@ public class FilterFragment extends ListFragment {
 			values.put(iptblruleSSID.COLUMN_NAME_SSID, wifiSSID);
 			newRowId = db.insert(iptblruleSSID.TABLE_NAME, null, values);
 
-			ContentValues values4SSID = new ContentValues();
-			values4SSID.put(ssidInfo.COLUMN_NAME_SSID, wifiSSID);
-			values4SSID.put(ssidInfo.COLUMN_NAME_ACTIVE, "N");
-			newRowId = db.insert(ssidInfo.TABLE_NAME, null, values4SSID);
-
 		} else { // Set the manual black based rules to DB
 
 			// Create a new map of values, where column names are the keys
@@ -318,6 +325,12 @@ public class FilterFragment extends ListFragment {
 		neomDbHelper mDbHelper = new neomDbHelper(getActivity());
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		db.execSQL("delete from " + iptblrule.TABLE_NAME);
+		if (wifiSSID != null) {
+			db.execSQL("delete from " + iptblruleSSID.TABLE_NAME + "where "
+					+ iptblruleSSID.COLUMN_NAME_SSID + "=" + wifiSSID);
+			db.execSQL("delete from " + ssidInfo.TABLE_NAME + "where "
+					+ ssidInfo.COLUMN_NAME_SSID + "=" + wifiSSID);
+		}
 		Toast.makeText(
 				getActivity(),
 				"Existing " + Integer.toString(uidinDBLst.size())
@@ -339,13 +352,12 @@ public class FilterFragment extends ListFragment {
 
 		if (wifiSSID != null) {
 
-			String whereClause = iptblruleSSID.COLUMN_NAME_SSID + "="
-					+ wifiSSID;
+			String whereClause = iptblruleSSID.COLUMN_NAME_SSID + "=" + "?";
 			Cursor cursor = db.query(iptblruleSSID.TABLE_NAME, // The table to
 					// // query
 					projection, // The columns to return
 					whereClause, // The columns for the WHERE clause
-					null,// The sort order
+					new String[] { wifiSSID },// The sort order
 					null, null, null);
 			if (cursor.moveToFirst()) {
 				do {

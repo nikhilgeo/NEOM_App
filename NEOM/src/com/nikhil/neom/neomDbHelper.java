@@ -7,6 +7,7 @@ import com.nikhil.neom.iptablesDBContract.ssidInfo;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class neomDbHelper extends SQLiteOpenHelper {
 	// If you change the database schema, you must increment the database
@@ -20,6 +21,7 @@ public class neomDbHelper extends SQLiteOpenHelper {
 			+ " INTEGER PRIMARY KEY" + COMMA_SEP + iptblrule.COLUMN_NAME_UID
 			+ TEXT_TYPE + COMMA_SEP + iptblrule.COLUMN_NAME_RULE + TEXT_TYPE
 			+ " )";
+
 	private static final String SQL_CREATE_ENTRIES_iptblruleSSID = "CREATE TABLE "
 			+ iptblruleSSID.TABLE_NAME
 			+ " ("
@@ -33,6 +35,7 @@ public class neomDbHelper extends SQLiteOpenHelper {
 			+ TEXT_TYPE
 			+ COMMA_SEP
 			+ iptblruleSSID.COLUMN_NAME_SSID + TEXT_TYPE + " )";
+
 	private static final String SQL_CREATE_ENTRIES_ssidInfo = "CREATE TABLE "
 			+ ssidInfo.TABLE_NAME + " (" + ssidInfo._ID
 			+ " INTEGER PRIMARY KEY" + COMMA_SEP + ssidInfo.COLUMN_NAME_SSID
@@ -53,9 +56,17 @@ public class neomDbHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		db.execSQL(SQL_CREATE_ENTRIES_iptblrule);
-		db.execSQL(SQL_CREATE_ENTRIES_iptblruleSSID);
-		db.execSQL(SQL_CREATE_ENTRIES_ssidInfo);
+		try {
+			Log.w("NEOM:", SQL_CREATE_ENTRIES_iptblrule);
+
+			db.execSQL(SQL_CREATE_ENTRIES_iptblrule);
+			Log.w("NEOM:", SQL_CREATE_ENTRIES_iptblrule);
+			db.execSQL(SQL_CREATE_ENTRIES_iptblruleSSID);
+			Log.w("NEOM:", SQL_CREATE_ENTRIES_iptblruleSSID);
+			db.execSQL(SQL_CREATE_ENTRIES_ssidInfo);
+		} catch (Exception ex) {
+			Log.w("NEOM:", ex.toString(), ex);
+		}
 
 	}
 
