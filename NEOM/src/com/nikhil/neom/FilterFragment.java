@@ -121,6 +121,7 @@ public class FilterFragment extends ListFragment {
 						values4SSID.put(ssidInfo.COLUMN_NAME_ACTIVE, "N");
 						newRowId = db.insert(ssidInfo.TABLE_NAME, null,
 								values4SSID);
+						db.close();
 						Toast.makeText(
 								getActivity(),
 								Integer.toString(blocked_uid.size())
@@ -296,6 +297,7 @@ public class FilterFragment extends ListFragment {
 			newRowId = db.insert(iptblrule.TABLE_NAME, null, values);
 
 		}
+		db.close();
 
 		return newRowId;
 
@@ -326,11 +328,13 @@ public class FilterFragment extends ListFragment {
 		SQLiteDatabase db = mDbHelper.getWritableDatabase();
 		db.execSQL("delete from " + iptblrule.TABLE_NAME);
 		if (wifiSSID != null) {
-			db.execSQL("delete from " + iptblruleSSID.TABLE_NAME + "where "
-					+ iptblruleSSID.COLUMN_NAME_SSID + "=" + wifiSSID);
-			db.execSQL("delete from " + ssidInfo.TABLE_NAME + "where "
-					+ ssidInfo.COLUMN_NAME_SSID + "=" + wifiSSID);
+			db.execSQL("delete from " + iptblruleSSID.TABLE_NAME + " where "
+					+ iptblruleSSID.COLUMN_NAME_SSID + "='" + wifiSSID + "'");
+			db.execSQL("delete from " + ssidInfo.TABLE_NAME + " where "
+					+ ssidInfo.COLUMN_NAME_SSID + "='" + wifiSSID + "'");
 		}
+		db.close();
+
 		Toast.makeText(
 				getActivity(),
 				"Existing " + Integer.toString(uidinDBLst.size())
@@ -371,6 +375,9 @@ public class FilterFragment extends ListFragment {
 					uidLst.add(uid);
 				} while (cursor.moveToNext());
 			}
+			if (cursor != null && !cursor.isClosed())
+				cursor.close();
+			db.close();
 		}
 
 		else {
@@ -401,6 +408,10 @@ public class FilterFragment extends ListFragment {
 				uidLstNoSSID.add(uid);
 			} while (cursor.moveToNext());
 		}
+		
+		if (cursor != null && !cursor.isClosed())
+			cursor.close();
+		db.close();
 		return uidLstNoSSID;
 	}
 
